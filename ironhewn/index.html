@@ -1,26 +1,143 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ironhewn — Forge your strength</title><meta name="color-scheme" content="dark"><style>
-:root{--bg:#0C0D10;--s1:#15171C;--line:#2A2E37;--t1:#F4F1EC;--t2:#A6ABB5;--a1:#FF5A1F;--a2:#FFA23A}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--t1);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif}
-main{max-width:760px;margin:0 auto;padding:48px 22px 80px}a{color:var(--a2)}h1{font-size:34px;line-height:1.15;margin:.2em 0 .1em;letter-spacing:-.01em}
-h2{font-size:21px;margin:2em 0 .4em;padding-top:.6em;border-top:1px solid var(--line)}h3{font-size:17px;margin:1.4em 0 .3em}
-p,li{color:#D9D6D0}small,.muted{color:var(--t2)}ul{padding-left:1.2em}li{margin:.25em 0}
-.brand{display:flex;gap:10px;align-items:center;color:var(--t2);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:13px;text-decoration:none}
-.brand b{color:var(--t1)}.pill{display:inline-block;background:var(--s1);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:13px;color:var(--t2)}
-.card{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:18px 0}
-nav.links{display:flex;flex-wrap:wrap;gap:14px;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:14px}
-table{border-collapse:collapse;width:100%;font-size:14.5px}td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}th{color:var(--t2);font-weight:600}
+<title>Ironhewn — Forge your strength</title><meta name="description" content="The lifting log that ranks every lift against lifters your size, from Rust to Starforged. With an AI coach that reads your training."><meta name="color-scheme" content="dark">
+<meta property="og:title" content="Ironhewn — Forge your strength"><meta property="og:description" content="The lifting log that ranks every lift against lifters your size, from Rust to Starforged. With an AI coach that reads your training.">
+<link rel="preload" href="/assets/fonts/bigshoulders.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z' fill='%23FF6A2A' stroke='%23FF6A2A' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z' fill='%230C0D10'/%3E%3C/svg%3E"><style>
+@font-face{font-family:'Big Shoulders';src:url('/assets/fonts/bigshoulders.woff2') format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Manrope';src:url('/assets/fonts/manrope.woff2') format('woff2');font-weight:200 800;font-display:swap}
+
+:root{--bg:#0C0D10;--s1:#15171C;--s2:#1C1F26;--line:#2A2E37;--t1:#F4F1EC;--t2:#A6ABB5;--t3:#6E7480;--a1:#FF5A1F;--a2:#FFA23A;--molten:linear-gradient(120deg,#FF5A1F,#FFA23A)}
+*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--t1);font:16px/1.6 Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.display{font-family:'Big Shoulders',Impact,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.02em;line-height:.95}
+.top{position:relative;overflow:hidden;padding-bottom:40px}
+.top:before{content:'';position:absolute;inset:-20% -10% auto -10%;height:900px;pointer-events:none;
+ background:radial-gradient(60% 50% at 75% 10%,rgba(255,90,31,.32),transparent 70%),radial-gradient(45% 40% at 10% 0%,rgba(255,162,58,.14),transparent 70%)}
+nav.bar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Big Shoulders';font-weight:800;font-size:24px;letter-spacing:.16em}
+nav.bar .links{display:flex;gap:22px;font-size:14px;font-weight:700;color:var(--t2)}nav.bar .links a{text-decoration:none}nav.bar .links a:hover{color:var(--t1)}
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:48px;align-items:center;padding-top:40px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--a2);background:rgba(255,90,31,.1);border:1px solid rgba(255,90,31,.25);padding:6px 12px;border-radius:99px}
+h1.display{font-size:clamp(56px,9vw,112px);margin:18px 0 0}
+h1 .hot{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(17px,1.6vw,20px);color:#D3D0CA;max-width:500px;margin:18px 0 0}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 22px;border-radius:14px;font-weight:800;text-decoration:none;font-size:16px}
+.btn.primary{background:var(--molten);color:#fff;box-shadow:0 10px 30px rgba(255,90,31,.35)}
+.btn.ghost{border:1px solid var(--line);color:var(--t2);background:rgba(255,255,255,.02)}
+.note{font-size:13px;color:var(--t3);margin-top:14px}
+.phones{position:relative;height:620px;width:540px}
+.phone{position:absolute;width:250px;border-radius:38px;padding:10px;background:#050506;border:1px solid #2b2f38;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03) inset}
+.phone img{display:block;width:100%;height:auto;border-radius:29px}
+.phone.a{left:0;top:80px;transform:rotate(-7deg)}.phone.b{left:145px;top:0;z-index:2}.phone.c{right:0;top:96px;transform:rotate(7deg)}
+section{padding:96px 0;position:relative}
+h2.display{font-size:clamp(40px,6vw,68px);margin:0}
+.sub{color:var(--t2);font-size:18px;max-width:640px;margin:14px 0 0}
+.ladder{margin-top:44px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}.ladder img{display:block;width:100%;min-width:900px;height:auto}
+.factors{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.factors span{background:var(--s1);border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:700;color:var(--t2)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:24px}
+.card .i{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(255,90,31,.12);color:var(--a2);margin-bottom:14px}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--t2);font-size:15px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.split .phone{position:relative;width:310px;margin:0 auto;transform:rotate(2deg)}
+.checks{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px}.checks li{display:flex;gap:12px;color:#D3D0CA}
+.checks li svg{flex:none;color:var(--a2);margin-top:2px}
+.pro{display:inline-flex;font-size:12px;font-weight:900;letter-spacing:.1em;padding:4px 10px;border-radius:99px;background:var(--molten);color:#fff;vertical-align:middle;margin-left:8px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
+.plan{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:28px}.plan.hot{border-color:rgba(255,90,31,.6);background:linear-gradient(180deg,rgba(255,90,31,.08),transparent 60%),var(--s1)}
+.plan h3{font-family:'Big Shoulders';font-size:34px;letter-spacing:.06em;text-transform:uppercase;margin:0}
+.plan .tag{color:var(--t2);margin:4px 0 16px}.plan ul{margin:0;padding-left:18px;color:#D3D0CA}.plan li{margin:7px 0}
+.beta{text-align:center;background:radial-gradient(50% 80% at 50% 0%,rgba(255,90,31,.22),transparent 70%)}
+.beta .sub{margin:14px auto 0}
+footer{border-top:1px solid var(--line);padding:36px 0 56px;color:var(--t3);font-size:14px}
+footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}footer a{color:var(--t2);text-decoration:none}footer .links{display:flex;flex-wrap:wrap;gap:18px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.reveal.in{opacity:1;transform:none}
+@media (max-width:900px){
+ .hero{grid-template-columns:1fr;padding-top:10px}.phones{height:520px;margin-top:10px;width:100%}.phone{width:220px;border-radius:30px;padding:8px}.phone img{border-radius:23px}
+ .phone.a{left:-4%;top:60px}.phone.b{left:calc(50% - 110px)}.phone.c{right:-4%;top:70px}
+ .grid{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr;gap:36px}.plans{grid-template-columns:1fr}nav.bar .links{display:none}
+}
+@media (max-width:560px){.grid{grid-template-columns:1fr}section{padding:72px 0}.phones{height:440px}.phone{width:180px}.phone.b{left:calc(50% - 90px)}}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 </style></head>
-<body><main><a class="brand" href="/">Oddwright · <b>Ironhewn</b></a>
-<h1>Ironhewn</h1>
-<p class="muted">Forge your strength.</p>
-<ul>
-<li>Fast set logging with supersets and an automatic rest timer</li>
-<li>Metal ranks for every lift, from Rust to Starforged, scaled to your size</li>
-<li>1RM tracking, plateau detection and muscle recovery</li>
-<li>An AI coach that reads your log and builds your plan (Ironhewn Pro)</li>
-<li>Works with Health Connect for sleep, steps and heart rate</li>
-</ul>
-<p class="muted">Ironhewn is for general fitness. It isn’t a medical device and doesn’t diagnose, treat, cure or prevent any condition.</p>
-<nav class="links"><a href="/ironhewn/">Ironhewn</a><a href="/ironhewn/privacy">Privacy</a><a href="/ironhewn/terms">Terms</a><a href="/ironhewn/delete-account">Delete your account</a><a href="/ironhewn/support">Support</a><a href="/">Oddwright</a></nav>
-</main></body></html>
+<body>
+<div class="top"><div class="wrap">
+ <nav class="bar"><a class="brand" href="/ironhewn/"><svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg34" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#FFA23A"/><stop offset="1" stop-color="#FF5A1F"/></linearGradient></defs>
+<path d="M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z" fill="url(#lg34)" stroke="url(#lg34)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
+<path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg34)"/></svg>IRONHEWN</a>
+  <div class="links"><a href="#ranks">Ranks</a><a href="#features">Features</a><a href="#coach">Coach</a><a href="#beta">Beta</a></div></nav>
+ <div class="hero">
+  <div>
+   <span class="eyebrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg> Coming soon to Android</span>
+   <h1 class="display">Forge your<br><span class="hot">strength.</span></h1>
+   <p class="lede">The lifting log that ranks every lift against lifters your size — from Rust to Starforged — with an AI coach that actually reads your training.</p>
+   <div class="cta"><a class="btn primary" href="mailto:oddwright.support@gmail.com?subject=Ironhewn%20beta&body=I%27d%20like%20to%20test%20Ironhewn.%20My%20Google%20Play%20email%20is%3A%20">Join the beta</a><a class="btn ghost" href="#features">See what’s inside</a></div>
+   <p class="note">Free to use. Ironhewn Pro adds the AI coach.</p>
+  </div>
+  <div class="phones">
+   <div class="phone a"><img src="/assets/ironhewn/workout.webp" alt="Logging a bench press workout with a rest timer" width="720" height="1559"></div>
+   <div class="phone b"><img src="/assets/ironhewn/home.webp" alt="Home screen with level, rank and today's readiness" width="720" height="1559"></div>
+   <div class="phone c"><img src="/assets/ironhewn/exercise.webp" alt="Squat strength rank: Platinum II" width="720" height="1559"></div>
+  </div>
+ </div>
+</div></div>
+
+<section id="ranks"><div class="wrap">
+ <h2 class="display reveal">Every lift<br>gets a rank.</h2>
+ <p class="sub reveal">Eleven metals, three divisions each. Your rank is scaled to your body, so a 140 lb lifter and a 240 lb lifter are judged fairly — and every PR moves you up.</p>
+ <div class="factors reveal"><span>Sex</span><span>Bodyweight</span><span>Height</span><span>Age</span><span>Overall Forge Rank</span></div>
+ <div class="ladder reveal"><img src="/assets/ironhewn/ranks.webp" alt="Rank tiers: Rust, Copper, Bronze, Iron, Steel, Silver, Gold, Platinum, Titanium, Orichalcum, Starforged" width="1600" height="175"></div>
+</div></section>
+
+<section id="features"><div class="wrap">
+ <h2 class="display reveal">Built for the<br>way you lift.</h2>
+ <div class="grid"><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg></div><h3>Log in seconds</h3><p>Tap-fast sets, supersets and an automatic rest timer that buzzes even with your screen off.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><h3>Proven programs</h3><p>14 built-in plans, from 5×5 to powerbuilding, that add weight for you and deload when you stall.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><h3>Plateau radar</h3><p>Spots a stalled lift weeks before you’d notice, and shows your 1RM climbing over time.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z"/></svg></div><h3>Recovery that’s real</h3><p>A muscle-recovery map plus sleep and heart rate from Health Connect, rolled into a daily readiness score.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div><h3>PRs worth sharing</h3><p>Every personal record and rank-up gets a card made for your story.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h3>Your data, your phone</h3><p>Works offline. No ads, no trackers. Back up to the cloud only if you want to.</p></div></div>
+</div></section>
+
+<section id="coach"><div class="wrap split">
+ <div class="reveal">
+  <h2 class="display">A coach that<br>knows your numbers.<span class="pro">PRO</span></h2>
+  <p class="sub">Ask anything. Your coach has read every set you’ve logged, so the answers are about <em>you</em> — not generic advice.</p>
+  <ul class="checks">
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg><span><b>Breaks plateaus</b> — finds why a lift stalled and what to change.</span></li>
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg><span><b>Builds your plan</b> — a full program for your schedule, applied in one tap.</span></li>
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg><span><b>Knows your recovery</b> — factors in sleep and heart rate if you let it.</span></li>
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg><span><b>Projects your next rank</b> — “Gold I in about 6 weeks at your pace.”</span></li>
+  </ul>
+ </div>
+ <div class="phone reveal"><img src="/assets/ironhewn/coach.webp" alt="The AI coach diagnosing a bench press plateau" width="720" height="1559"></div>
+</div></section>
+
+<section><div class="wrap">
+ <h2 class="display reveal">Free where it<br>counts.</h2>
+ <div class="plans">
+  <div class="plan reveal"><h3>Free</h3><p class="tag">Everything you need to train.</p>
+   <ul><li>Unlimited workouts, routines and history</li><li>All 14 programs with automatic progression</li><li>Ranks, levels, achievements and PRs</li><li>Rest timer, plate math and tools</li><li>Health Connect and readiness score</li></ul></div>
+  <div class="plan hot reveal"><h3>Pro</h3><p class="tag">Everything that thinks for you. 7-day free trial.</p>
+   <ul><li>AI coach with your full training history</li><li>Plateau diagnosis and one-tap fixes</li><li>AI-built programs and exercise swaps</li><li>Rank projections and all-time analytics</li><li>Sleep and recovery insights</li></ul></div>
+ </div>
+</div></section>
+
+<section id="beta" class="beta"><div class="wrap">
+ <div class="reveal"><svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true"><defs><linearGradient id="lg72" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#FFA23A"/><stop offset="1" stop-color="#FF5A1F"/></linearGradient></defs>
+<path d="M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z" fill="url(#lg72)" stroke="url(#lg72)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
+<path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg72)"/></svg></div>
+ <h2 class="display reveal" style="margin-top:14px">Be one of the<br>first to lift.</h2>
+ <p class="sub reveal">Ironhewn is in testing on Android. Send us the email you use on Google Play and we’ll add you to the beta.</p>
+ <div class="cta reveal" style="justify-content:center"><a class="btn primary" href="mailto:oddwright.support@gmail.com?subject=Ironhewn%20beta&body=I%27d%20like%20to%20test%20Ironhewn.%20My%20Google%20Play%20email%20is%3A%20">Join the beta</a></div>
+</div></section>
+
+<footer><div class="wrap row">
+ <div>© 2026 <a href="/">Oddwright</a>. Ironhewn is for general fitness, not medical advice.</div>
+ <div class="links"><a href="/ironhewn/privacy">Privacy</a><a href="/ironhewn/terms">Terms</a><a href="/ironhewn/delete-account">Delete account</a><a href="/ironhewn/support">Support</a></div>
+</div></footer>
+<script>
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body></html>
