@@ -43,6 +43,9 @@ h2.display{font-size:clamp(40px,6vw,68px);margin:0}
 .card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--t2);font-size:15px}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
 .split .phone{position:relative;width:310px;margin:0 auto;transform:rotate(2deg)}
+.fold{position:relative;max-width:520px;margin:0 auto;border-radius:30px;padding:12px;background:#050506;border:1px solid #2b2f38;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.fold img{display:block;width:100%;height:auto;border-radius:20px}
+.fold .hinge{position:absolute;top:12px;bottom:12px;left:50%;width:2px;transform:translateX(-1px);background:linear-gradient(180deg,transparent,rgba(255,255,255,.12) 15%,rgba(255,255,255,.12) 85%,transparent)}
 .checks{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px}.checks li{display:flex;gap:12px;color:#D3D0CA}
 .checks li svg{flex:none;color:var(--a2);margin-top:2px}
 .pro{display:inline-flex;font-size:12px;font-weight:900;letter-spacing:.1em;padding:4px 10px;border-radius:99px;background:var(--molten);color:#fff;vertical-align:middle;margin-left:8px}
@@ -69,10 +72,10 @@ footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;a
 <path d="M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z" fill="url(#lg34)" stroke="url(#lg34)" stroke-width="5" stroke-linejoin="round"/>
 <path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
 <path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg34)"/></svg>IRONHEWN</a>
-  <div class="links"><a href="#ranks">Ranks</a><a href="#features">Features</a><a href="#coach">Coach</a><a href="#beta">Beta</a></div></nav>
+  <div class="links"><a href="#ranks">Ranks</a><a href="#features">Features</a><a href="#foldables">Foldables</a><a href="#coach">Coach</a><a href="#beta">Beta</a></div></nav>
  <div class="hero">
   <div>
-   <span class="eyebrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg> Coming soon to Android</span>
+   <span class="eyebrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg> Coming soon to Android &amp; iPhone</span>
    <h1 class="display">Forge your<br><span class="hot">strength.</span></h1>
    <p class="lede">The lifting log that ranks every lift against lifters your size — from Rust to Starforged — with an AI coach that actually reads your training.</p>
    <div class="cta"><a class="btn primary" href="mailto:oddwright.support@gmail.com?subject=Ironhewn%20beta&body=I%27d%20like%20to%20test%20Ironhewn.%20My%20Google%20Play%20email%20is%3A%20">Join the beta</a><a class="btn ghost" href="#features">See what’s inside</a></div>
@@ -96,6 +99,19 @@ footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;a
 <section id="features"><div class="wrap">
  <h2 class="display reveal">Built for the<br>way you lift.</h2>
  <div class="grid"><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg></div><h3>Log in seconds</h3><p>Tap-fast sets, supersets and an automatic rest timer that buzzes even with your screen off.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><h3>Proven programs</h3><p>14 built-in plans, from 5×5 to powerbuilding, that add weight for you and deload when you stall.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><h3>Plateau radar</h3><p>Spots a stalled lift weeks before you’d notice, and shows your 1RM climbing over time.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z"/></svg></div><h3>Recovery that’s real</h3><p>A muscle-recovery map plus sleep and heart rate from Health Connect, rolled into a daily readiness score.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div><h3>PRs worth sharing</h3><p>Every personal record and rank-up gets a card made for your story.</p></div><div class="card reveal"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h3>Your data, your phone</h3><p>Works offline. No ads, no trackers. Back up to the cloud only if you want to.</p></div></div>
+</div></section>
+
+<section id="foldables"><div class="wrap split fold-split">
+ <div class="fold reveal"><img src="/assets/ironhewn/fold-workout.webp" alt="Ironhewn unfolded: sets on one side, rest timer and next set on the other" width="1080" height="1256"><span class="hinge"></span></div>
+ <div class="reveal">
+  <h2 class="display">Made for<br>foldables.</h2>
+  <p class="sub">Unfold and Ironhewn spreads out: your sets on one side, the rest timer and your next set on the other. No pinching, no scrolling back and forth between sets.</p>
+  <ul class="checks">
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg><span><b>Galaxy Z Fold</b>: two-pane workouts, and tabletop mode when you prop it half-open on a bench.</span></li>
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg><span><b>iPhone Duo</b>: the iPhone app is built for Apple’s new foldable from day one, with Split View support.</span></li>
+   <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4M19 6l1.5-1.5"/></svg><span><b>Every other phone</b>: the same fast logger, sized for one hand.</span></li>
+  </ul>
+ </div>
 </div></section>
 
 <section id="coach"><div class="wrap split">
@@ -128,7 +144,7 @@ footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;a
 <path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
 <path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg72)"/></svg></div>
  <h2 class="display reveal" style="margin-top:14px">Be one of the<br>first to lift.</h2>
- <p class="sub reveal">Ironhewn is in testing on Android. Send us the email you use on Google Play and we’ll add you to the beta.</p>
+ <p class="sub reveal">Ironhewn is in testing on Android, with iPhone (including iPhone Duo) coming next. Send us the email you use on Google Play and we’ll add you to the beta.</p>
  <div class="cta reveal" style="justify-content:center"><a class="btn primary" href="mailto:oddwright.support@gmail.com?subject=Ironhewn%20beta&body=I%27d%20like%20to%20test%20Ironhewn.%20My%20Google%20Play%20email%20is%3A%20">Join the beta</a></div>
 </div></section>
 
