@@ -1,0 +1,502 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How Strong Am I? Bench, Squat &amp; Deadlift Calculator | Ironhewn</title><meta name="description" content="Free strength calculator: enter a set of bench, squat, deadlift or more to get your estimated 1RM, strength level and metal rank, scaled to your bodyweight."><meta name="color-scheme" content="dark">
+<meta property="og:title" content="How Strong Am I? Bench, Squat &amp; Deadlift Calculator | Ironhewn"><meta property="og:description" content="Free strength calculator: enter a set of bench, squat, deadlift or more to get your estimated 1RM, strength level and metal rank, scaled to your bodyweight.">
+<link rel="canonical" href="https://oddwright.github.io/ironhewn/strength-calculator"><meta property="og:type" content="website"><meta property="og:url" content="https://oddwright.github.io/ironhewn/strength-calculator"><meta property="og:site_name" content="Ironhewn"><meta property="og:image" content="https://oddwright.github.io/assets/ironhewn/calc/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="How strong am I? The Ironhewn strength rank calculator, from Rust to Starforged"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0C0D10"><link rel="modulepreload" href="/assets/ironhewn/calc/util.js"><link rel="modulepreload" href="/assets/ironhewn/calc/calc.js"><link rel="modulepreload" href="/assets/ironhewn/calc/ranks.js"><link rel="modulepreload" href="/assets/ironhewn/calc/scoring.js">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "Ironhewn Strength Rank Calculator", "url": "https://oddwright.github.io/ironhewn/strength-calculator", "description": "Free strength calculator: enter a set of bench, squat, deadlift or more to get your estimated 1RM, strength level and metal rank, scaled to your bodyweight.", "applicationCategory": "HealthApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "Oddwright", "url": "https://oddwright.github.io/"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How is my strength rank calculated?", "acceptedAnswer": {"@type": "Answer", "text": "We turn your set into an estimated one-rep max (the average of the Epley and Brzycki formulas, the same math the Ironhewn app uses), then compare it with strength standards for your sex and bodyweight, adjusted for height and age. That gives a strength level from Beginner to Elite, which maps onto 11 metal ranks, from Rust to Starforged, with three divisions each."}}, {"@type": "Question", "name": "Is this calculator accurate?", "acceptedAnswer": {"@type": "Answer", "text": "It’s a solid estimate, not a lab test. One-rep-max formulas are most reliable with sets of 1 to 5 reps and drift as the reps climb. The standards are approximations compiled from public strength-standard data, with each level set near the 5th, 20th, 50th, 80th and 95th percentile of people who lift. Use your rank for motivation and goal-setting, not as medical or coaching advice."}}, {"@type": "Question", "name": "Why does bodyweight matter?", "acceptedAnswer": {"@type": "Answer", "text": "Bigger bodies carry more muscle, so they usually lift more, but not in proportion. Strength follows a muscle’s cross-section, which grows more slowly than body mass, so the standards scale with bodyweight to the 0.67 power instead of a simple ratio. Doubling your bodyweight raises the bar by about 59%, not 100%, which keeps the comparison fair for light and heavy lifters."}}, {"@type": "Question", "name": "What’s a good bench press for my weight?", "acceptedAnswer": {"@type": "Answer", "text": "For a 180 lb man of average height and under 35, an intermediate bench (about the median lifter) is around 215 lb and an advanced bench is around 286 lb. For an 80 kg man that’s about 96 kg and 128 kg. For a 140 lb woman, intermediate is around 107 lb and advanced around 151 lb. Enter your own numbers above to see your exact standards."}}, {"@type": "Question", "name": "Do I need to test a true one-rep max?", "acceptedAnswer": {"@type": "Answer", "text": "No. Any hard set of 1 to 12 reps works, so there’s no need to grind out a risky single. Sets of 3 to 5 reps taken close to failure give the most reliable estimate. Count only reps with full range of motion: half reps inflate your rank."}}, {"@type": "Question", "name": "Does Ironhewn cost money?", "acceptedAnswer": {"@type": "Answer", "text": "The calculator is free, with no sign-up. The Ironhewn app is free to use too, including workouts, programs, ranks and PRs. Ironhewn Pro is an optional subscription that adds the AI coach. The app is in beta on Android, and iPhone is coming soon."}}]}]}</script>
+<link rel="preload" href="/assets/fonts/bigshoulders.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z' fill='%23FF6A2A' stroke='%23FF6A2A' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z' fill='%230C0D10'/%3E%3C/svg%3E"><style>
+@font-face{font-family:'Big Shoulders';src:url('/assets/fonts/bigshoulders.woff2') format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Manrope';src:url('/assets/fonts/manrope.woff2') format('woff2');font-weight:200 800;font-display:swap}
+
+:root{--bg:#0C0D10;--s1:#15171C;--s2:#1C1F26;--line:#2A2E37;--t1:#F4F1EC;--t2:#A6ABB5;--t3:#6E7480;--a1:#FF5A1F;--a2:#FFA23A;--molten:linear-gradient(120deg,#FF5A1F,#FFA23A)}
+*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--t1);font:16px/1.6 Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.display{font-family:'Big Shoulders',Impact,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.02em;line-height:.95}
+.top{position:relative;overflow:hidden;padding-bottom:40px}
+.top:before{content:'';position:absolute;inset:-20% -10% auto -10%;height:900px;pointer-events:none;
+ background:radial-gradient(60% 50% at 75% 10%,rgba(255,90,31,.32),transparent 70%),radial-gradient(45% 40% at 10% 0%,rgba(255,162,58,.14),transparent 70%)}
+nav.bar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Big Shoulders';font-weight:800;font-size:24px;letter-spacing:.16em}
+nav.bar .links{display:flex;gap:22px;font-size:14px;font-weight:700;color:var(--t2)}nav.bar .links a{text-decoration:none}nav.bar .links a:hover{color:var(--t1)}
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:48px;align-items:center;padding-top:40px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--a2);background:rgba(255,90,31,.1);border:1px solid rgba(255,90,31,.25);padding:6px 12px;border-radius:99px}
+h1.display{font-size:clamp(56px,9vw,112px);margin:18px 0 0}
+h1 .hot{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(17px,1.6vw,20px);color:#D3D0CA;max-width:500px;margin:18px 0 0}
+.lede b{color:#FFA23A;font-weight:800}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 22px;border-radius:14px;font-weight:800;text-decoration:none;font-size:16px}
+.btn.primary{background:var(--molten);color:#fff;box-shadow:0 10px 30px rgba(255,90,31,.35)}
+.btn.ghost{border:1px solid var(--line);color:var(--t2);background:rgba(255,255,255,.02)}
+.note{font-size:13px;color:var(--t3);margin-top:14px}
+.phones{position:relative;height:620px;width:540px}
+.phone{position:absolute;width:250px;border-radius:38px;padding:10px;background:#050506;border:1px solid #2b2f38;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03) inset}
+.phone img{display:block;width:100%;height:auto;border-radius:29px}
+.phone.a{left:0;top:80px;transform:rotate(-7deg)}.phone.b{left:145px;top:0;z-index:2}.phone.c{right:0;top:96px;transform:rotate(7deg)}
+section{padding:96px 0;position:relative}
+h2.display{font-size:clamp(40px,6vw,68px);margin:0}
+.sub{color:var(--t2);font-size:18px;max-width:640px;margin:14px 0 0}
+.ladder{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:8px;margin:44px 0 0;padding:0;list-style:none}
+.ladder li{text-align:center}.ladder img{display:block;width:100%;max-width:96px;height:auto;margin:0 auto}
+.ladder b{display:block;margin-top:4px;font-family:'Big Shoulders',Impact,sans-serif;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+@media (max-width:760px){.ladder{grid-template-columns:repeat(6,minmax(0,1fr));row-gap:14px}.ladder b{font-size:14px;letter-spacing:.02em}}
+@media (max-width:520px){.ladder{grid-template-columns:repeat(4,minmax(0,1fr))}.ladder img{max-width:64px}}
+.factors{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.factors span{background:var(--s1);border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:700;color:var(--t2)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:24px}
+.card .i{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(255,90,31,.12);color:var(--a2);margin-bottom:14px}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--t2);font-size:15px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.split .phone{position:relative;width:310px;margin:0 auto;transform:rotate(2deg)}
+.fold{position:relative;max-width:520px;margin:0 auto;border-radius:30px;padding:12px;background:#050506;border:1px solid #2b2f38;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.fold img{display:block;width:100%;height:auto;border-radius:20px}
+.fold .hinge{position:absolute;top:12px;bottom:12px;left:50%;width:2px;transform:translateX(-1px);background:linear-gradient(180deg,transparent,rgba(255,255,255,.12) 15%,rgba(255,255,255,.12) 85%,transparent)}
+.checks{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px}.checks li{display:flex;gap:12px;color:#D3D0CA}
+.checks li svg{flex:none;color:var(--a2);margin-top:2px}
+.pro{display:inline-flex;font-size:12px;font-weight:900;letter-spacing:.1em;padding:4px 10px;border-radius:99px;background:var(--molten);color:#fff;vertical-align:middle;margin-left:8px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
+.plan{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:28px}.plan.hot{border-color:rgba(255,90,31,.6);background:linear-gradient(180deg,rgba(255,90,31,.08),transparent 60%),var(--s1)}
+.plan h3{font-family:'Big Shoulders';font-size:34px;letter-spacing:.06em;text-transform:uppercase;margin:0}
+.plan .tag{color:var(--t2);margin:4px 0 16px}.plan ul{margin:0;padding-left:18px;color:#D3D0CA}.plan li{margin:7px 0}
+.beta{text-align:center;background:radial-gradient(50% 80% at 50% 0%,rgba(255,90,31,.22),transparent 70%)}
+.beta .sub{margin:14px auto 0}
+footer{border-top:1px solid var(--line);padding:36px 0 56px;color:var(--t3);font-size:14px}
+footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}footer a{color:var(--t2);text-decoration:none}footer .links{display:flex;flex-wrap:wrap;gap:18px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.reveal.in{opacity:1;transform:none}
+@media (max-width:900px){
+ .hero{grid-template-columns:1fr;padding-top:10px}.phones{height:520px;margin-top:10px;width:100%}.phone{width:220px;border-radius:30px;padding:8px}.phone img{border-radius:23px}
+ .phone.a{left:-4%;top:60px}.phone.b{left:calc(50% - 110px)}.phone.c{right:-4%;top:70px}
+ .grid{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr;gap:36px}.plans{grid-template-columns:1fr}nav.bar .links{display:none}
+}
+@media (max-width:560px){.grid{grid-template-columns:1fr}section{padding:72px 0}.phones{height:440px}.phone{width:180px}.phone.b{left:calc(50% - 90px)}}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+.top{padding-bottom:8px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:12px;z-index:9;background:var(--s1);padding:8px 12px;border-radius:8px}
+nav.bar .links a.app{color:var(--a2)}
+.chero{position:relative;max-width:820px;padding-top:6px}
+.chero h1.display{font-size:clamp(54px,11vw,108px);margin:16px 0 0}
+.kicker{font-family:'Big Shoulders',Impact,sans-serif;font-weight:800;font-size:clamp(21px,3.2vw,30px);letter-spacing:.05em;text-transform:uppercase;color:#E6E1D9;margin:12px 0 0;line-height:1.1}
+.chero .lede{max-width:640px}
+.calc{position:relative;display:grid;gap:16px;margin-top:30px}
+.panel{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:20px;min-width:0}
+.f{display:block;margin:0 0 16px;border:0;padding:0;min-width:0}
+.lbl{display:block;font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin:0 0 7px;padding:0}
+.opt{font-weight:700;letter-spacing:.02em;text-transform:none;color:var(--t3)}
+.in{position:relative}
+.in input,select.sel{-webkit-appearance:none;appearance:none;width:100%;min-height:52px;padding:12px 14px;font:700 17px/1.2 Manrope,-apple-system,sans-serif;color:var(--t1);background:var(--s2);border:1px solid var(--line);border-radius:13px;margin:0}
+.in input{padding-right:48px}.in input::placeholder{color:#565C68;font-weight:600}
+.in .u{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-weight:800;font-size:14px;color:var(--t3);pointer-events:none}
+select.sel{padding-right:40px;cursor:pointer;background:var(--s2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23A6ABB5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center}
+select.sel optgroup{color:var(--t3)}select.sel option{color:var(--t1);background:var(--s2)}
+.in input:focus-visible,select.sel:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
+.in input[aria-invalid=true]{border-color:#FF7A59}
+.err{display:block;color:#FF9C7E;font-size:13.5px;font-weight:600;margin-top:6px}.err:empty{display:none}
+.hint{display:block;color:var(--t3);font-size:13px;margin-top:6px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;background:var(--s2);border:1px solid var(--line);border-radius:13px}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.seg label{display:block;text-align:center;padding:11px 8px;border-radius:10px;font-weight:800;color:var(--t2);cursor:pointer;-webkit-user-select:none;user-select:none}
+.seg input:checked+label{background:var(--molten);color:#fff;box-shadow:0 6px 18px rgba(255,90,31,.28)}
+.seg input:focus-visible+label{outline:2px solid var(--a2);outline-offset:2px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.more{border-top:1px solid var(--line);margin:4px 0 16px;padding-top:12px}
+.more summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-weight:800;color:var(--t2);padding:4px 0}
+.more summary::-webkit-details-marker{display:none}.more summary:after{content:'+';color:var(--a2);font-size:22px;line-height:1}.more[open] summary:after{content:'\2212'}
+.more .body{padding-top:12px}
+.go{width:100%;justify-content:center;border:0;cursor:pointer;font-family:inherit}
+.private{display:flex;gap:8px;align-items:center;justify-content:center;color:var(--t3);font-size:13px;margin:12px 0 0;text-align:center}
+.res{min-height:300px}
+.empty{display:grid;place-items:center;text-align:center;min-height:300px;color:var(--t2);padding:10px}
+.empty svg{margin-bottom:10px}.empty p{margin:0;max-width:300px}
+.rtop{display:flex;align-items:center;gap:14px}
+.badge{position:relative;flex:none;margin:-12px}
+.badge img,.badge svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.shine{animation:rankShine 3.6s ease-in-out infinite}
+@keyframes rankShine{0%,55%{transform:skewX(-20deg) translateX(0)}100%{transform:skewX(-20deg) translateX(220px)}}
+.eb{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+.rname{font-family:'Big Shoulders',Impact,sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(46px,9vw,66px);line-height:.92;margin:4px 0 4px;outline:none}
+.rsub{color:var(--t2);font-weight:700;font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px}
+.stat{background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px 12px 11px}
+.stat b{display:block;font-size:clamp(18px,2.3vw,23px);line-height:1.15;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-top:4px}
+.pct{margin:16px 0 0;font-size:17px;color:#D3D0CA}.pct strong{color:var(--t1)}
+.next{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.bar{height:10px;border-radius:99px;background:var(--s2);overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--molten);border-radius:inherit}
+.nrow{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--t2);margin-top:8px;font-weight:700}
+.need{margin:12px 0 0;font-size:16px;color:#D3D0CA}.need b{color:var(--a2);font-size:19px}
+.h3{font-size:15px;font-weight:800;margin:22px 0 4px}
+.cap{font-size:13px;color:var(--t3);margin:0 0 6px}
+table{border-collapse:collapse;width:100%}
+table.mine{font-size:15px}
+table.mine th,table.mine td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.mine thead th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);font-weight:800}
+table.mine .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}
+table.mine small{display:block;font-size:12px;font-weight:700;color:var(--t3)}table.mine td:nth-child(3){padding-left:14px}
+table.mine tr.you td{background:rgba(255,90,31,.12);color:var(--t1);font-weight:800}
+table.mine tr.you td:first-child{border-radius:10px 0 0 10px}table.mine tr.you td:last-child{border-radius:0 10px 10px 0}
+.rk{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}.rk img{width:30px;height:30px;margin:-4px -2px}
+.dim{color:var(--t3)}
+.sharebox{margin-top:20px;background:var(--s2);border:1px dashed rgba(255,162,58,.45);border-radius:16px;padding:14px}
+.sharebox p{margin:0 0 12px;font-weight:700;color:var(--t1)}
+.sbtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn.sm{padding:11px 16px;font-size:14px;border-radius:11px;cursor:pointer;font-family:inherit}
+button.btn.ghost{background:rgba(255,255,255,.03)}
+.copied{font-size:13px;color:var(--a2);font-weight:700;align-self:center}
+.sec{padding:72px 0;position:relative}
+.sec h2.display{font-size:clamp(40px,6.4vw,68px)}
+.steps{display:grid;gap:14px;margin-top:32px}
+.step{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px}
+.step .i{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(255,90,31,.12);color:var(--a2);margin-bottom:12px}
+.step h3{margin:0 0 6px;font-size:18px}.step p{margin:0;color:var(--t2);font-size:15.5px}
+.ladder2{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin:32px 0 0;padding:0;list-style:none}
+.ladder2 li{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:10px 6px 12px;text-align:center}
+.ladder2 img{display:block;width:80px;height:80px;margin:0 auto 2px}
+.ladder2 b{display:block;font-family:'Big Shoulders',Impact,sans-serif;font-size:21px;letter-spacing:.04em;text-transform:uppercase;line-height:1.1}
+.ladder2 span{display:block;font-size:12px;color:var(--t3);font-weight:700;margin-top:2px}
+.note2{color:var(--t3);font-size:14px;margin-top:16px;max-width:720px}
+details.stdd{background:var(--s1);border:1px solid var(--line);border-radius:18px;margin-top:12px}
+details.stdd summary{cursor:pointer;list-style:none;padding:18px 20px;font-weight:800;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+details.stdd summary::-webkit-details-marker{display:none}details.stdd summary:after{content:'+';color:var(--a2);font-size:24px;line-height:1}details.stdd[open] summary:after{content:'\2212'}
+.tbls{display:grid;gap:18px;padding:0 14px 18px}
+.tbl{overflow-x:auto}
+.tbl table{font-size:14px;font-variant-numeric:tabular-nums}
+.tbl caption{text-align:left;font-weight:800;color:var(--t2);padding:0 4px 8px;font-size:14px}
+.tbl th,.tbl td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child{text-align:left}.tbl thead th{color:var(--t3);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.tbl tbody th{font-weight:700;color:var(--t2)}
+.tbl .full{display:none}
+.ctab{text-align:center;background:radial-gradient(60% 90% at 50% 0%,rgba(255,90,31,.2),transparent 70%),var(--s1);border:1px solid rgba(255,90,31,.35);border-radius:28px;padding:44px 22px}
+.ctab .sub{margin:14px auto 0}.ctab .cta{justify-content:center}
+.plat{margin:18px 0 0;color:#D3D0CA;font-weight:700}.plat b{color:var(--t1)}
+.faq{max-width:820px;margin-top:20px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:800;font-size:18px;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}.faq summary:after{content:'+';color:var(--a2);font-size:24px;line-height:1;flex:none}.faq details[open] summary:after{content:'\2212'}
+.faq p{margin:0 0 20px;color:#D3D0CA}.faq a{color:var(--a2)}
+html[data-unit=kg] .lbonly{display:none}html:not([data-unit=kg]) .kgonly{display:none}
+@media (min-width:560px){.panel{padding:26px}.tbl .full{display:inline}.tbl .short{display:none}}
+@media (min-width:760px){.steps{grid-template-columns:1fr 1fr}.tbls{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.ladder2{grid-template-columns:repeat(11,minmax(0,1fr));gap:8px}.ladder2 img{width:72px;height:72px}.ladder2 b{font-size:17px}.ladder2 span{font-size:11px}}
+@media (min-width:960px){.calc{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);align-items:start}.res{position:sticky;top:16px}.sec{padding:96px 0}}
+@media (max-width:380px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}.rk img{display:none}}
+@media (prefers-reduced-motion:reduce){.shine{animation:none}}
+</style></head>
+<body>
+<a class="skip" href="#calculator">Skip to the calculator</a>
+<div class="top"><div class="wrap">
+ <nav class="bar"><a class="brand" href="/ironhewn/"><svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg34" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#FFA23A"/><stop offset="1" stop-color="#FF5A1F"/></linearGradient></defs>
+<path d="M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z" fill="url(#lg34)" stroke="url(#lg34)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
+<path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg34)"/></svg>IRONHEWN</a>
+  <div class="links"><a href="#calculator">Calculator</a><a href="#how">How it works</a><a href="#standards">Standards</a><a href="#faq">FAQ</a><a class="app" href="#app">Get the app</a></div></nav>
+ <header class="chero">
+  <span class="eyebrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg> Free strength calculator</span>
+  <h1 class="display">How strong<br><span class="hot">am I?</span></h1>
+  <p class="kicker">Strength rank calculator for bench, squat, deadlift &amp; more</p>
+  <p class="lede">Enter any set of 1 to 12 reps. Get your estimated one-rep max, your strength level and the metal rank you’d earn in Ironhewn, scaled to your bodyweight, sex, height and age.</p>
+ </header>
+ <div class="calc" id="calculator">
+  <form class="panel" id="calc" novalidate>
+   <label class="f"><span class="lbl">Lift</span><select class="sel" name="lift" id="lift"><optgroup label="The big lifts"><option value="bench" selected>Bench Press</option><option value="squat">Squat</option><option value="deadlift">Deadlift</option><option value="ohp">Overhead Press</option><option value="row">Barbell Row</option></optgroup><optgroup label="Bodyweight + added weight"><option value="pullup">Pull-up (weighted)</option><option value="chinup">Chin-up (weighted)</option><option value="dip">Dip (weighted)</option></optgroup><optgroup label="More lifts"><option value="incline">Incline Bench Press</option><option value="front-squat">Front Squat</option><option value="sumo">Sumo Deadlift</option><option value="hip-thrust">Hip Thrust</option><option value="db-bench">Dumbbell Bench Press</option><option value="curl">Barbell Curl</option></optgroup></select></label>
+   <fieldset class="f"><legend class="lbl">Units</legend><div class="seg">
+    <input type="radio" name="unit" id="u-lb" value="lb" checked><label for="u-lb">lb</label>
+    <input type="radio" name="unit" id="u-kg" value="kg"><label for="u-kg">kg</label></div></fieldset>
+   <div class="two">
+    <div class="f"><label class="lbl" for="w" id="w-lbl">Weight lifted</label><div class="in"><input id="w" name="w" type="text" inputmode="decimal" autocomplete="off" placeholder="225" aria-describedby="err-w w-hint"><span class="u u-txt">lb</span></div></div>
+    <div class="f"><label class="lbl" for="reps">Reps</label><select class="sel" id="reps" name="reps"><option value="1">1 (max)</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+   </div>
+   <span class="hint" id="w-hint" style="margin:-8px 0 8px"></span><span class="err" id="err-w" style="margin:-8px 0 12px"></span>
+   <div class="f"><label class="lbl" for="bw">Bodyweight</label><div class="in"><input id="bw" name="bw" type="text" inputmode="decimal" autocomplete="off" placeholder="180" aria-describedby="err-bw"><span class="u u-txt">lb</span></div><span class="err" id="err-bw"></span></div>
+   <fieldset class="f"><legend class="lbl">Sex <span class="opt">(for strength standards)</span></legend><div class="seg">
+    <input type="radio" name="sex" id="s-m" value="male" checked><label for="s-m">Male</label>
+    <input type="radio" name="sex" id="s-f" value="female"><label for="s-f">Female</label></div></fieldset>
+   <details class="more" id="more"><summary>Height &amp; age <span class="opt">(optional, sharper rank)</span></summary><div class="body">
+    <div class="f"><span class="lbl" id="h-lbl">Height</span>
+     <div class="two lbonly"><div class="in"><input name="ft" type="text" inputmode="numeric" autocomplete="off" placeholder="5" aria-labelledby="h-lbl" aria-describedby="err-h"><span class="u">ft</span></div>
+      <div class="in"><input name="inch" type="text" inputmode="decimal" autocomplete="off" placeholder="10" aria-label="Height, inches" aria-describedby="err-h"><span class="u">in</span></div></div>
+     <div class="in kgonly"><input name="cm" type="text" inputmode="decimal" autocomplete="off" placeholder="178" aria-labelledby="h-lbl" aria-describedby="err-h"><span class="u">cm</span></div>
+     <span class="err" id="err-h"></span></div>
+    <div class="f" style="margin:0"><label class="lbl" for="age">Age</label><div class="in"><input id="age" name="age" type="text" inputmode="numeric" autocomplete="off" placeholder="30" aria-describedby="err-age"><span class="u">yrs</span></div><span class="err" id="err-age"></span></div>
+   </div></details>
+   <button class="btn primary go" type="submit">See my rank</button>
+   <p class="private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg> Runs in your browser. Nothing is uploaded.</p>
+  </form>
+  <section class="panel res" id="result" aria-live="polite" aria-label="Your result"><div class="empty"><div><svg width="96" height="96" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 90 27v46L50 96 10 73V27z" fill="none" stroke="#3A3F49" stroke-width="4" stroke-dasharray="6 5"/><text x="50" y="62" text-anchor="middle" font-family="Big Shoulders,Impact,sans-serif" font-weight="800" font-size="34" fill="#6E7480">?</text></svg><p>Enter a lift, your reps and your bodyweight to see your rank.</p></div></div></section>
+ </div>
+ <noscript><p class="note">The calculator needs JavaScript. The strength standards tables below work without it.</p></noscript>
+</div></div>
+
+<section class="sec" id="how"><div class="wrap">
+ <h2 class="display">How your rank<br>is calculated.</h2>
+ <p class="sub">The same math as the Ironhewn app, start to finish. Here it is in plain words.</p>
+ <div class="steps">
+  <div class="step"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg></div><h3>1. Your set becomes an estimated 1RM</h3><p>We average two well-known formulas, Epley and Brzycki, which bracket each other closely up to 10 reps (sets of 11–12 lean on Epley). A single counts as it is. For pull-ups, chin-ups and dips, the load is your bodyweight plus anything you added.</p></div>
+  <div class="step"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div><h3>2. Five checkpoints, Beginner to Elite</h3><p>Standards are set for a reference lifter (a 176 lb / 80 kg man or a 132 lb / 60 kg woman) and placed near the 5th, 20th, 50th, 80th and 95th percentile of people who lift. Your level is where your 1RM falls between them.</p></div>
+  <div class="step"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><h3>3. Scaled to your bodyweight</h3><p>Strength follows muscle cross-section, which grows more slowly than body mass. So the standards scale with bodyweight to the 0.67 power: a 240 lb lifter needs a bigger bench than a 160 lb lifter, but about 31% bigger, not 50%.</p></div>
+  <div class="step"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.6.2-2.4 1-2.5 2.5-.2-1.6-1-2.4-2.5-2.5 1.6-.2 2.4-1 2.5-2.5z"/></svg></div><h3>4. Adjusted for height and age</h3><p>Taller lifters move the bar farther, so standards ease slightly with height (up to 7% either way). From age 35 you earn 1.2% credit a year, and lifters under 19 earn 2.5% a year: a 50-year-old’s standards sit about 15% lower.</p></div>
+ </div>
+</div></section>
+
+<section class="sec" id="ranks" style="padding-top:0"><div class="wrap">
+ <h2 class="display">Eleven metals,<br><span class="hot">three divisions each.</span></h2>
+ <p class="sub">Your level maps onto a ladder from Rust to Starforged, and each metal splits into divisions III, II and I. Silver is the median lifter, Platinum is advanced, Orichalcum is elite, and Starforged is beyond.</p>
+ <ul class="ladder2"><li><img src="/assets/ironhewn/calc/badges/rust.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#D9824F">Rust</b><span>Starting out</span></li><li><img src="/assets/ironhewn/calc/badges/copper.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#F2A66B">Copper</b><span>Beats 4%</span></li><li><img src="/assets/ironhewn/calc/badges/bronze.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#E4BE7F">Bronze</b><span>Beats 9%</span></li><li><img src="/assets/ironhewn/calc/badges/iron.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#B4BCC6">Iron</b><span>Beats 16%</span></li><li><img src="/assets/ironhewn/calc/badges/steel.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#B5CDE0">Steel</b><span>Beats 28%</span></li><li><img src="/assets/ironhewn/calc/badges/silver.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#F7FAFC">Silver</b><span>Beats 42%</span></li><li><img src="/assets/ironhewn/calc/badges/gold.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#FFE58A">Gold</b><span>Beats 58%</span></li><li><img src="/assets/ironhewn/calc/badges/platinum.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#DFFFFB">Platinum</b><span>Beats 72%</span></li><li><img src="/assets/ironhewn/calc/badges/titanium.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#DADDFF">Titanium</b><span>Beats 84%</span></li><li><img src="/assets/ironhewn/calc/badges/orichalcum.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#FFC98A">Orichalcum</b><span>Beats 91%</span></li><li><img src="/assets/ironhewn/calc/badges/starforged.webp" width="80" height="80" alt="" loading="lazy"><b style="color:#7FE7FF">Starforged</b><span>Beats 97%</span></li></ul>
+ <p class="note2">“Beats X%” is roughly where each metal starts among people who lift, from the percentiles the standards are built around. They’re estimates, meant for motivation.</p>
+</div></section>
+
+<section class="sec" id="standards" style="padding-top:0"><div class="wrap">
+ <h2 class="display">Strength standards<br>by bodyweight.</h2>
+ <p class="sub">Estimated one-rep maxes for each level, for lifters of average height under 35. Use the calculator for standards adjusted to your exact height and age.</p>
+ <p class="note2 lbonly" style="margin-top:10px">Showing pounds. Switch the calculator to kg for metric tables.</p><p class="note2 kgonly" style="margin-top:10px">Showing kilograms. Switch the calculator to lb for imperial tables.</p>
+ <details class="stdd" open><summary>Bench press standards by bodyweight</summary><div class="tbls"><div class="tbl lbonly"><table><caption>Men: bench press 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">120 lb</th><td>82</td><td>116</td><td>164</td><td>218</td><td>279</td></tr><tr><th scope="row">140 lb</th><td>91</td><td>128</td><td>181</td><td>242</td><td>310</td></tr><tr><th scope="row">160 lb</th><td>99</td><td>140</td><td>198</td><td>264</td><td>339</td></tr><tr><th scope="row">180 lb</th><td>107</td><td>152</td><td>215</td><td>286</td><td>367</td></tr><tr><th scope="row">200 lb</th><td>115</td><td>163</td><td>230</td><td>307</td><td>393</td></tr><tr><th scope="row">220 lb</th><td>123</td><td>174</td><td>245</td><td>327</td><td>419</td></tr><tr><th scope="row">240 lb</th><td>130</td><td>184</td><td>260</td><td>347</td><td>444</td></tr><tr><th scope="row">260 lb</th><td>137</td><td>194</td><td>274</td><td>366</td><td>469</td></tr><tr><th scope="row">280 lb</th><td>144</td><td>204</td><td>288</td><td>385</td><td>493</td></tr></tbody></table></div><div class="tbl lbonly"><table><caption>Women: bench press 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">100 lb</th><td>36</td><td>57</td><td>86</td><td>121</td><td>159</td></tr><tr><th scope="row">120 lb</th><td>41</td><td>64</td><td>97</td><td>136</td><td>180</td></tr><tr><th scope="row">140 lb</th><td>45</td><td>71</td><td>107</td><td>151</td><td>199</td></tr><tr><th scope="row">160 lb</th><td>50</td><td>78</td><td>117</td><td>165</td><td>218</td></tr><tr><th scope="row">180 lb</th><td>54</td><td>85</td><td>127</td><td>179</td><td>236</td></tr><tr><th scope="row">200 lb</th><td>58</td><td>91</td><td>136</td><td>192</td><td>253</td></tr><tr><th scope="row">220 lb</th><td>61</td><td>97</td><td>145</td><td>205</td><td>270</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Men: bench press 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">55 kg</th><td>37</td><td>53</td><td>75</td><td>100</td><td>128</td></tr><tr><th scope="row">60 kg</th><td>40</td><td>56</td><td>79</td><td>106</td><td>135</td></tr><tr><th scope="row">70 kg</th><td>44</td><td>62</td><td>88</td><td>117</td><td>150</td></tr><tr><th scope="row">80 kg</th><td>48</td><td>68</td><td>96</td><td>128</td><td>164</td></tr><tr><th scope="row">90 kg</th><td>52</td><td>74</td><td>104</td><td>139</td><td>177</td></tr><tr><th scope="row">100 kg</th><td>56</td><td>79</td><td>111</td><td>149</td><td>190</td></tr><tr><th scope="row">110 kg</th><td>59</td><td>84</td><td>119</td><td>158</td><td>203</td></tr><tr><th scope="row">120 kg</th><td>63</td><td>89</td><td>126</td><td>168</td><td>215</td></tr><tr><th scope="row">130 kg</th><td>66</td><td>94</td><td>133</td><td>177</td><td>227</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Women: bench press 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">45 kg</th><td>16</td><td>26</td><td>39</td><td>54</td><td>72</td></tr><tr><th scope="row">50 kg</th><td>18</td><td>28</td><td>41</td><td>58</td><td>77</td></tr><tr><th scope="row">60 kg</th><td>20</td><td>31</td><td>47</td><td>66</td><td>87</td></tr><tr><th scope="row">70 kg</th><td>22</td><td>35</td><td>52</td><td>73</td><td>96</td></tr><tr><th scope="row">80 kg</th><td>24</td><td>38</td><td>57</td><td>80</td><td>105</td></tr><tr><th scope="row">90 kg</th><td>26</td><td>41</td><td>61</td><td>87</td><td>114</td></tr><tr><th scope="row">100 kg</th><td>28</td><td>44</td><td>66</td><td>93</td><td>123</td></tr></tbody></table></div></div></details><details class="stdd"><summary>Squat standards by bodyweight</summary><div class="tbls"><div class="tbl lbonly"><table><caption>Men: squat 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">120 lb</th><td>116</td><td>157</td><td>211</td><td>273</td><td>347</td></tr><tr><th scope="row">140 lb</th><td>128</td><td>174</td><td>234</td><td>302</td><td>385</td></tr><tr><th scope="row">160 lb</th><td>140</td><td>190</td><td>256</td><td>330</td><td>421</td></tr><tr><th scope="row">180 lb</th><td>152</td><td>206</td><td>277</td><td>358</td><td>456</td></tr><tr><th scope="row">200 lb</th><td>163</td><td>221</td><td>297</td><td>384</td><td>489</td></tr><tr><th scope="row">220 lb</th><td>174</td><td>235</td><td>317</td><td>409</td><td>522</td></tr><tr><th scope="row">240 lb</th><td>184</td><td>249</td><td>336</td><td>434</td><td>553</td></tr><tr><th scope="row">260 lb</th><td>194</td><td>263</td><td>355</td><td>457</td><td>583</td></tr><tr><th scope="row">280 lb</th><td>204</td><td>276</td><td>373</td><td>481</td><td>613</td></tr></tbody></table></div><div class="tbl lbonly"><table><caption>Women: squat 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">100 lb</th><td>55</td><td>88</td><td>126</td><td>175</td><td>230</td></tr><tr><th scope="row">120 lb</th><td>62</td><td>99</td><td>143</td><td>198</td><td>260</td></tr><tr><th scope="row">140 lb</th><td>69</td><td>110</td><td>158</td><td>220</td><td>289</td></tr><tr><th scope="row">160 lb</th><td>75</td><td>120</td><td>173</td><td>240</td><td>316</td></tr><tr><th scope="row">180 lb</th><td>81</td><td>130</td><td>187</td><td>260</td><td>341</td></tr><tr><th scope="row">200 lb</th><td>87</td><td>140</td><td>201</td><td>279</td><td>366</td></tr><tr><th scope="row">220 lb</th><td>93</td><td>149</td><td>214</td><td>298</td><td>391</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Men: squat 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">55 kg</th><td>53</td><td>72</td><td>96</td><td>124</td><td>159</td></tr><tr><th scope="row">60 kg</th><td>56</td><td>76</td><td>102</td><td>132</td><td>168</td></tr><tr><th scope="row">70 kg</th><td>62</td><td>84</td><td>113</td><td>146</td><td>187</td></tr><tr><th scope="row">80 kg</th><td>68</td><td>92</td><td>124</td><td>160</td><td>204</td></tr><tr><th scope="row">90 kg</th><td>74</td><td>100</td><td>134</td><td>173</td><td>221</td></tr><tr><th scope="row">100 kg</th><td>79</td><td>107</td><td>144</td><td>186</td><td>237</td></tr><tr><th scope="row">110 kg</th><td>84</td><td>114</td><td>153</td><td>198</td><td>253</td></tr><tr><th scope="row">120 kg</th><td>89</td><td>121</td><td>163</td><td>210</td><td>268</td></tr><tr><th scope="row">130 kg</th><td>94</td><td>127</td><td>172</td><td>222</td><td>282</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Women: squat 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">45 kg</th><td>25</td><td>40</td><td>57</td><td>79</td><td>104</td></tr><tr><th scope="row">50 kg</th><td>27</td><td>42</td><td>61</td><td>85</td><td>112</td></tr><tr><th scope="row">60 kg</th><td>30</td><td>48</td><td>69</td><td>96</td><td>126</td></tr><tr><th scope="row">70 kg</th><td>33</td><td>53</td><td>77</td><td>106</td><td>140</td></tr><tr><th scope="row">80 kg</th><td>36</td><td>58</td><td>84</td><td>116</td><td>153</td></tr><tr><th scope="row">90 kg</th><td>39</td><td>63</td><td>91</td><td>126</td><td>165</td></tr><tr><th scope="row">100 kg</th><td>42</td><td>68</td><td>97</td><td>135</td><td>177</td></tr></tbody></table></div></div></details><details class="stdd"><summary>Deadlift standards by bodyweight</summary><div class="tbls"><div class="tbl lbonly"><table><caption>Men: deadlift 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">120 lb</th><td>136</td><td>191</td><td>252</td><td>320</td><td>395</td></tr><tr><th scope="row">140 lb</th><td>151</td><td>212</td><td>280</td><td>355</td><td>438</td></tr><tr><th scope="row">160 lb</th><td>165</td><td>231</td><td>306</td><td>388</td><td>479</td></tr><tr><th scope="row">180 lb</th><td>179</td><td>250</td><td>331</td><td>420</td><td>519</td></tr><tr><th scope="row">200 lb</th><td>192</td><td>269</td><td>355</td><td>451</td><td>556</td></tr><tr><th scope="row">220 lb</th><td>205</td><td>286</td><td>378</td><td>481</td><td>593</td></tr><tr><th scope="row">240 lb</th><td>217</td><td>304</td><td>401</td><td>509</td><td>629</td></tr><tr><th scope="row">260 lb</th><td>229</td><td>320</td><td>423</td><td>538</td><td>663</td></tr><tr><th scope="row">280 lb</th><td>240</td><td>337</td><td>445</td><td>565</td><td>697</td></tr></tbody></table></div><div class="tbl lbonly"><table><caption>Women: deadlift 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">100 lb</th><td>75</td><td>110</td><td>154</td><td>208</td><td>263</td></tr><tr><th scope="row">120 lb</th><td>84</td><td>124</td><td>173</td><td>235</td><td>297</td></tr><tr><th scope="row">140 lb</th><td>93</td><td>137</td><td>192</td><td>261</td><td>330</td></tr><tr><th scope="row">160 lb</th><td>102</td><td>150</td><td>210</td><td>285</td><td>361</td></tr><tr><th scope="row">180 lb</th><td>111</td><td>163</td><td>228</td><td>309</td><td>390</td></tr><tr><th scope="row">200 lb</th><td>119</td><td>174</td><td>244</td><td>332</td><td>419</td></tr><tr><th scope="row">220 lb</th><td>126</td><td>186</td><td>260</td><td>353</td><td>446</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Men: deadlift 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">55 kg</th><td>62</td><td>87</td><td>115</td><td>146</td><td>180</td></tr><tr><th scope="row">60 kg</th><td>66</td><td>92</td><td>122</td><td>155</td><td>191</td></tr><tr><th scope="row">70 kg</th><td>73</td><td>102</td><td>135</td><td>172</td><td>212</td></tr><tr><th scope="row">80 kg</th><td>80</td><td>112</td><td>148</td><td>188</td><td>232</td></tr><tr><th scope="row">90 kg</th><td>87</td><td>121</td><td>160</td><td>203</td><td>251</td></tr><tr><th scope="row">100 kg</th><td>93</td><td>130</td><td>172</td><td>218</td><td>269</td></tr><tr><th scope="row">110 kg</th><td>99</td><td>139</td><td>183</td><td>233</td><td>287</td></tr><tr><th scope="row">120 kg</th><td>105</td><td>147</td><td>194</td><td>247</td><td>304</td></tr><tr><th scope="row">130 kg</th><td>111</td><td>155</td><td>205</td><td>260</td><td>321</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Women: deadlift 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">45 kg</th><td>34</td><td>49</td><td>69</td><td>94</td><td>119</td></tr><tr><th scope="row">50 kg</th><td>36</td><td>53</td><td>74</td><td>101</td><td>127</td></tr><tr><th scope="row">60 kg</th><td>41</td><td>60</td><td>84</td><td>114</td><td>144</td></tr><tr><th scope="row">70 kg</th><td>45</td><td>67</td><td>93</td><td>126</td><td>160</td></tr><tr><th scope="row">80 kg</th><td>49</td><td>73</td><td>102</td><td>138</td><td>175</td></tr><tr><th scope="row">90 kg</th><td>54</td><td>79</td><td>110</td><td>150</td><td>189</td></tr><tr><th scope="row">100 kg</th><td>57</td><td>84</td><td>118</td><td>161</td><td>203</td></tr></tbody></table></div></div></details><details class="stdd"><summary>Overhead press standards by bodyweight</summary><div class="tbls"><div class="tbl lbonly"><table><caption>Men: overhead press 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">120 lb</th><td>55</td><td>78</td><td>105</td><td>136</td><td>173</td></tr><tr><th scope="row">140 lb</th><td>60</td><td>86</td><td>116</td><td>151</td><td>192</td></tr><tr><th scope="row">160 lb</th><td>66</td><td>94</td><td>127</td><td>165</td><td>210</td></tr><tr><th scope="row">180 lb</th><td>72</td><td>102</td><td>138</td><td>179</td><td>227</td></tr><tr><th scope="row">200 lb</th><td>77</td><td>109</td><td>148</td><td>192</td><td>244</td></tr><tr><th scope="row">220 lb</th><td>82</td><td>117</td><td>157</td><td>205</td><td>260</td></tr><tr><th scope="row">240 lb</th><td>87</td><td>124</td><td>167</td><td>217</td><td>275</td></tr><tr><th scope="row">260 lb</th><td>91</td><td>130</td><td>176</td><td>229</td><td>291</td></tr><tr><th scope="row">280 lb</th><td>96</td><td>137</td><td>185</td><td>240</td><td>305</td></tr></tbody></table></div><div class="tbl lbonly"><table><caption>Women: overhead press 1RM (lb)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">100 lb</th><td>29</td><td>44</td><td>63</td><td>86</td><td>110</td></tr><tr><th scope="row">120 lb</th><td>32</td><td>50</td><td>71</td><td>97</td><td>124</td></tr><tr><th scope="row">140 lb</th><td>36</td><td>55</td><td>78</td><td>107</td><td>137</td></tr><tr><th scope="row">160 lb</th><td>39</td><td>60</td><td>86</td><td>117</td><td>150</td></tr><tr><th scope="row">180 lb</th><td>42</td><td>65</td><td>93</td><td>127</td><td>163</td></tr><tr><th scope="row">200 lb</th><td>45</td><td>70</td><td>99</td><td>136</td><td>174</td></tr><tr><th scope="row">220 lb</th><td>48</td><td>74</td><td>106</td><td>145</td><td>186</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Men: overhead press 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">55 kg</th><td>25</td><td>35</td><td>48</td><td>62</td><td>79</td></tr><tr><th scope="row">60 kg</th><td>26</td><td>38</td><td>51</td><td>66</td><td>84</td></tr><tr><th scope="row">70 kg</th><td>29</td><td>42</td><td>56</td><td>73</td><td>93</td></tr><tr><th scope="row">80 kg</th><td>32</td><td>46</td><td>62</td><td>80</td><td>102</td></tr><tr><th scope="row">90 kg</th><td>35</td><td>49</td><td>67</td><td>87</td><td>110</td></tr><tr><th scope="row">100 kg</th><td>37</td><td>53</td><td>72</td><td>93</td><td>118</td></tr><tr><th scope="row">110 kg</th><td>40</td><td>56</td><td>76</td><td>99</td><td>126</td></tr><tr><th scope="row">120 kg</th><td>42</td><td>60</td><td>81</td><td>105</td><td>133</td></tr><tr><th scope="row">130 kg</th><td>44</td><td>63</td><td>85</td><td>111</td><td>141</td></tr></tbody></table></div><div class="tbl kgonly"><table><caption>Women: overhead press 1RM (kg)</caption><thead><tr><th scope="col">Bodyweight</th><th scope="col"><span class="full">Beginner</span><span class="short">Beg</span></th><th scope="col"><span class="full">Novice</span><span class="short">Nov</span></th><th scope="col"><span class="full">Intermediate</span><span class="short">Int</span></th><th scope="col"><span class="full">Advanced</span><span class="short">Adv</span></th><th scope="col"><span class="full">Elite</span><span class="short">Elite</span></th></tr></thead><tbody><tr><th scope="row">45 kg</th><td>13</td><td>20</td><td>28</td><td>39</td><td>49</td></tr><tr><th scope="row">50 kg</th><td>14</td><td>21</td><td>30</td><td>41</td><td>53</td></tr><tr><th scope="row">60 kg</th><td>16</td><td>24</td><td>34</td><td>47</td><td>60</td></tr><tr><th scope="row">70 kg</th><td>17</td><td>27</td><td>38</td><td>52</td><td>67</td></tr><tr><th scope="row">80 kg</th><td>19</td><td>29</td><td>41</td><td>57</td><td>73</td></tr><tr><th scope="row">90 kg</th><td>20</td><td>31</td><td>45</td><td>61</td><td>79</td></tr><tr><th scope="row">100 kg</th><td>22</td><td>34</td><td>48</td><td>66</td><td>84</td></tr></tbody></table></div></div></details>
+</div></section>
+
+<section class="sec" id="app" style="padding-top:0"><div class="wrap"><div class="ctab">
+ <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><defs><linearGradient id="lg64" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#FFA23A"/><stop offset="1" stop-color="#FF5A1F"/></linearGradient></defs>
+<path d="M32 6.5 54 19.2v25.6L32 57.5 10 44.8V19.2z" fill="url(#lg64)" stroke="url(#lg64)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 15.5c1.6 6.2 8.6 9.7 8.6 18.6 0 6.3-4 10.6-8.6 10.6s-8.6-4-8.6-9.6c0-4.6 2.4-7.4 4.8-9.8.1 3.1 1.6 5.4 3.6 6-1-5.2-.6-10.9.2-15.8z" fill="#0C0D10"/>
+<path d="M32 33.5c1.3 2.4 3.4 3.8 3.4 6.6 0 2.3-1.5 3.9-3.4 3.9s-3.4-1.5-3.4-3.7c0-2.6 2.6-4.1 3.4-6.8z" fill="url(#lg64)"/></svg>
+ <h2 class="display" style="margin-top:14px">Track every lift.<br><span class="hot">Watch your rank climb.</span></h2>
+ <p class="sub">Ironhewn logs your sets, ranks every lift with this same math, and shows exactly what it takes to reach the next metal.</p>
+ <p class="plat"><b>Android</b> (beta) · <b>iPhone</b> coming soon</p>
+ <div class="cta"><a class="btn primary" href="mailto:oddwright.support@gmail.com?subject=Ironhewn%20beta&body=I%27d%20like%20to%20test%20Ironhewn.%20My%20Google%20Play%20email%20is%3A%20">Join the Android beta</a><a class="btn ghost" href="/ironhewn/">Meet Ironhewn</a></div>
+ <p class="note">Free to use. Ironhewn Pro adds the AI coach.</p>
+</div></div></section>
+
+<section class="sec" id="faq" style="padding-top:0"><div class="wrap">
+ <h2 class="display">Questions.</h2>
+ <div class="faq"><details><summary>How is my strength rank calculated?</summary><p>We turn your set into an estimated one-rep max (the average of the Epley and Brzycki formulas, the same math the Ironhewn app uses), then compare it with strength standards for your sex and bodyweight, adjusted for height and age. That gives a strength level from Beginner to Elite, which maps onto 11 metal ranks, from Rust to Starforged, with three divisions each.</p></details><details><summary>Is this calculator accurate?</summary><p>It’s a solid estimate, not a lab test. One-rep-max formulas are most reliable with sets of 1 to 5 reps and drift as the reps climb. The standards are approximations compiled from public strength-standard data, with each level set near the 5th, 20th, 50th, 80th and 95th percentile of people who lift. Use your rank for motivation and goal-setting, not as medical or coaching advice.</p></details><details><summary>Why does bodyweight matter?</summary><p>Bigger bodies carry more muscle, so they usually lift more, but not in proportion. Strength follows a muscle’s cross-section, which grows more slowly than body mass, so the standards scale with bodyweight to the 0.67 power instead of a simple ratio. Doubling your bodyweight raises the bar by about 59%, not 100%, which keeps the comparison fair for light and heavy lifters.</p></details><details><summary>What’s a good bench press for my weight?</summary><p>For a 180 lb man of average height and under 35, an intermediate bench (about the median lifter) is around 215 lb and an advanced bench is around 286 lb. For an 80 kg man that’s about 96 kg and 128 kg. For a 140 lb woman, intermediate is around 107 lb and advanced around 151 lb. Enter your own numbers above to see your exact standards. <a href="#standards">See the tables by bodyweight.</a></p></details><details><summary>Do I need to test a true one-rep max?</summary><p>No. Any hard set of 1 to 12 reps works, so there’s no need to grind out a risky single. Sets of 3 to 5 reps taken close to failure give the most reliable estimate. Count only reps with full range of motion: half reps inflate your rank.</p></details><details><summary>Does Ironhewn cost money?</summary><p>The calculator is free, with no sign-up. The Ironhewn app is free to use too, including workouts, programs, ranks and PRs. Ironhewn Pro is an optional subscription that adds the AI coach. The app is in beta on Android, and iPhone is coming soon. <a href="/ironhewn/">Learn more about Ironhewn.</a></p></details></div>
+</div></section>
+
+<footer><div class="wrap row">
+ <div>© 2026 <a href="/">Oddwright</a>. Estimates for motivation, not medical advice.</div>
+ <div class="links"><a href="/ironhewn/">Ironhewn</a><a href="/ironhewn/privacy">Privacy</a><a href="/ironhewn/terms">Terms</a><a href="/ironhewn/support">Support</a><a href="mailto:oddwright.support@gmail.com">Contact</a></div>
+</div></footer>
+<script type="module">
+import { thresholds, levelFrom, rankOf, levelName, valueForLevel, strengthScore, LEVEL_NAMES } from '/assets/ironhewn/calc/ranks.js';
+import { weightForReps } from '/assets/ironhewn/calc/calc.js';
+import { setPerf, standardsPercentile } from '/assets/ironhewn/calc/scoring.js';
+
+const KG_PER_LB = 0.45359237; // mirrors src/lib/units.js
+const LIFTS = {"bench": {"key": "bench", "id": "bench_press_bb", "name": "Bench Press", "short": "bench press", "bw": false}, "squat": {"key": "squat", "id": "squat_bb", "name": "Squat", "short": "squat", "bw": false}, "deadlift": {"key": "deadlift", "id": "deadlift_bb", "name": "Deadlift", "short": "deadlift", "bw": false}, "ohp": {"key": "ohp", "id": "ohp_bb", "name": "Overhead Press", "short": "overhead press", "bw": false}, "row": {"key": "row", "id": "bent_over_row_bb", "name": "Barbell Row", "short": "barbell row", "bw": false}, "pullup": {"key": "pullup", "id": "pull_up", "name": "Pull-up (weighted)", "short": "pull-up", "bw": true}, "chinup": {"key": "chinup", "id": "chin_up", "name": "Chin-up (weighted)", "short": "chin-up", "bw": true}, "dip": {"key": "dip", "id": "dip_triceps", "name": "Dip (weighted)", "short": "dip", "bw": true}, "incline": {"key": "incline", "id": "incline_bench_bb", "name": "Incline Bench Press", "short": "incline bench", "bw": false}, "front-squat": {"key": "front-squat", "id": "front_squat_bb", "name": "Front Squat", "short": "front squat", "bw": false}, "sumo": {"key": "sumo", "id": "sumo_deadlift_bb", "name": "Sumo Deadlift", "short": "sumo deadlift", "bw": false}, "hip-thrust": {"key": "hip-thrust", "id": "hip_thrust_bb", "name": "Hip Thrust", "short": "hip thrust", "bw": false}, "db-bench": {"key": "db-bench", "id": "bench_press_db", "name": "Dumbbell Bench Press", "short": "dumbbell bench", "bw": false}, "curl": {"key": "curl", "id": "curl_bb", "name": "Barbell Curl", "short": "barbell curl", "bw": false}};
+const PAGE = "https://oddwright.github.io/ironhewn/strength-calculator";
+const $ = (s, el = document) => el.querySelector(s);
+const form = $('#calc');
+const out = $('#result');
+const EMPTY = out.innerHTML;
+const touched = new Set();
+let unit = 'lb', last = null;
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const num = (el) => { const s = String(el.value).trim().replace(',', '.'); if (!s) return null; const v = Number(s); return Number.isFinite(v) ? v : NaN; };
+const toKg = (v) => (unit === 'lb' ? v * KG_PER_LB : v);
+const disp = (kg) => (unit === 'lb' ? kg / KG_PER_LB : kg);
+const roundTo = (v, step) => Math.round(v / step) * step;
+const nice = (v, dp = 0) => v.toLocaleString('en-US', { maximumFractionDigits: dp });
+const wt = (kg, dp = 0) => `${nice(disp(kg), dp)} ${unit}`;
+const tierText = (t) => t.c[2];
+
+function badge(rank, size, shine = true) {
+  const t = rank.tier, [c0, c1, c2] = t.c, box = Math.round(size * 1.2);
+  const pips = { III: 1, II: 2, I: 3 }[rank.div] || 0;
+  let dots = '';
+  for (let i = 0; i < pips; i++) dots += `<circle cx="${50 + (i - (pips - 1) / 2) * 9}" cy="77.5" r="3" fill="${c2}" stroke="${c0}" stroke-width="1"/>`;
+  return `<div class="badge" style="width:${box}px;height:${box}px;filter:drop-shadow(0 0 ${size / 6}px ${c1}99)">`
+    + `<img src="/assets/ironhewn/calc/badges/${t.id}.webp" width="${box}" height="${box}" alt="${esc(rank.label)} rank badge">`
+    + `<svg viewBox="-10 -10 120 120" aria-hidden="true"><defs><clipPath id="bclip"><path d="M50 4 90 27v46L50 96 10 73V27z"/></clipPath>`
+    + `<linearGradient id="bshine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`
+    + dots + (shine ? `<g clip-path="url(#bclip)"><rect class="shine" x="-60" y="0" width="40" height="100" fill="url(#bshine)" transform="skewX(-20)"/></g>` : '') + `</svg></div>`;
+}
+const chip = (rank) => `<span class="rk"><img src="/assets/ironhewn/calc/badges/${rank.tier.id}.webp" width="30" height="30" alt="" loading="lazy">${esc(rank.label)}</span>`;
+
+function heightCm() {
+  if (unit === 'kg') return num(form.cm);
+  const ft = num(form.ft), inch = num(form.inch);
+  if (ft == null && inch == null) return null;
+  if (Number.isNaN(ft) || Number.isNaN(inch)) return NaN;
+  return ((ft || 0) * 12 + (inch || 0)) * 2.54;
+}
+
+function read() {
+  const lift = LIFTS[form.lift.value];
+  const w = num(form.w), bw = num(form.bw), h = heightCm(), age = num(form.age);
+  const reps = parseInt(form.reps.value, 10);
+  const e = {};
+  const bwKg = bw == null || Number.isNaN(bw) ? null : toKg(bw);
+  if (bwKg == null) e.bw = Number.isNaN(bw) ? 'Enter your bodyweight as a number.' : 'Enter your bodyweight.';
+  else if (bwKg < 30 || bwKg > 250) e.bw = unit === 'lb' ? 'Enter a bodyweight between 66 and 550 lb.' : 'Enter a bodyweight between 30 and 250 kg.';
+  if (w == null) e.w = lift.bw ? 'Enter the weight you added (0 for bodyweight only).' : 'Enter the weight you lifted.';
+  else if (Number.isNaN(w)) e.w = 'Enter the weight as a number.';
+  else if (!lift.bw && w <= 0) e.w = 'Enter a weight above zero.';
+  else if (lift.bw && bwKg != null && toKg(w) <= -bwKg) e.w = 'Assistance has to be less than your bodyweight.';
+  else if (toKg(w) > 600) e.w = 'That’s past world-record territory. Check the number and the unit.';
+  if (h != null && !(h >= 120 && h <= 230)) e.h = unit === 'lb' ? 'Height should be between 4 ft and 7 ft 6 in. Leave it blank to skip.' : 'Height should be between 120 and 230 cm. Leave it blank to skip.';
+  if (age != null && !(age >= 13 && age <= 100)) e.age = 'Age should be between 13 and 100. Leave it blank to skip.';
+  return { key: form.lift.value, lift, w, bw, reps, sex: form.sex.value, h: e.h ? null : h, age: e.age || age == null ? null : Math.round(age), e };
+}
+
+function showErrors(e) {
+  for (const k of ['w', 'bw', 'h', 'age']) {
+    const msg = touched.has(k) ? e[k] || '' : '';
+    $(`#err-${k}`).textContent = msg;
+    const fields = k === 'h' ? [form.ft, form.inch, form.cm] : [form[k]];
+    for (const f of fields) f.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+}
+
+/** The same per-set math the app uses: setPerf → thresholds → levelFrom → rankOf. */
+function compute(s) {
+  const bodyweight = toKg(s.bw);
+  const prof = { sex: s.sex, bodyweight, height: s.h || undefined, birthYear: s.age ? new Date().getFullYear() - s.age : undefined };
+  const th = thresholds(s.lift.id, prof);
+  const perf = setPerf({ w: toKg(s.w), r: s.reps }, s.lift.bw ? 'weighted_bw' : 'weight_reps', bodyweight);
+  const L = levelFrom(perf, th.t);
+  return { prof, th, perf, L, rank: rankOf(L) };
+}
+
+function liftPhrase(s) {
+  const lb = `${nice(s.w, 1)} ${unit}`;
+  if (!s.lift.bw) return `${lb} ${s.lift.short} × ${s.reps}`;
+  const add = s.w > 0 ? ` +${lb}` : s.w < 0 ? ` with ${nice(-s.w, 1)} ${unit} assistance` : '';
+  return `${s.lift.short}${add} × ${s.reps}`;
+}
+
+function permalink(s) {
+  const q = new URLSearchParams({ lift: s.key, w: s.w, r: s.reps, u: unit, bw: s.bw, sex: s.sex === 'female' ? 'f' : 'm' });
+  if (s.h) q.set('h', Math.round(s.h));
+  if (s.age) q.set('age', s.age);
+  return q;
+}
+
+function render(s, c) {
+  const { th, perf, L, rank } = c;
+  const bwKg = c.prof.bodyweight;
+  const pctRaw = standardsPercentile(L);
+  const pct = Math.min(99, Math.round(pctRaw));
+  const pctTxt = pctRaw < 1 ? 'less than 1%' : `about ${pct}%`;
+  const plate = unit === 'lb' ? 5 : 2.5, step = unit === 'lb' ? 1 : 0.5;
+  const ceilTo = (v, st) => Math.ceil(v / st - 1e-9) * st;
+  const fmtLoad = (kg) => {
+    if (!s.lift.bw) return wt(kg);
+    const add = disp(kg - bwKg);
+    if (Math.abs(add) < 0.5) return 'Bodyweight';
+    return add > 0 ? `+${nice(add)} ${unit}` : `−${nice(-add)} ${unit} assist`;
+  };
+
+  let next = `<div class="next"><p class="need" style="margin:0"><b>Top of the ladder.</b> Starforged is beyond Elite. Nothing left to climb but your own records.</p></div>`;
+  if (rank.next) {
+    const target = valueForLevel(rank.next.L, th.t);
+    const more = Math.max(step, ceilTo(disp(target - perf), step));
+    const single = ceilTo(disp(target), step);
+    const five = ceilTo(disp(weightForReps(target, 5)), plate);
+    const how = s.lift.bw
+      ? `That’s ${fmtLoad(toKg(single))} for a single, or about ${fmtLoad(toKg(five))} for 5 reps.`
+      : `That’s a 1RM of ${nice(single, 1)} ${unit}, or about ${nice(five, 1)} × 5.`;
+    next = `<div class="next"><div class="bar" role="progressbar" aria-label="Progress to ${esc(rank.next.label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(rank.progress * 100)}"><i style="width:${Math.max(2, Math.min(100, rank.progress * 100)).toFixed(1)}%"></i></div>
+      <div class="nrow"><span>${esc(rank.label)}</span><span>${esc(rank.next.label)}</span></div>
+      <p class="need"><b>+${nice(more, 1)} ${unit}</b> on your 1RM to reach <strong>${esc(rank.next.label)}</strong>. ${how}</p></div>`;
+  }
+
+  const rows = [1, 2, 3, 4, 5].map((l) => ({ v: th.t[l - 1], html: `<td>${LEVEL_NAMES[l]}<small>Beats ${Math.round(standardsPercentile(l))}%</small></td><td class="n">${fmtLoad(th.t[l - 1])}</td><td>${chip(rankOf(l))}</td>` }));
+  const you = { v: perf, you: true, html: `<td>You<small>Beats ${pctRaw < 1 ? '&lt;1' : pct}%</small></td><td class="n">${fmtLoad(perf)}</td><td>${chip(rank)}</td>` };
+  rows.splice(rows.findIndex((r) => perf < r.v) === -1 ? rows.length : rows.findIndex((r) => perf < r.v), 0, you);
+  const who = [`${nice(s.bw, 1)} ${unit}`, s.sex === 'female' ? 'woman' : 'man'];
+  if (s.h) who.push(unit === 'lb' ? `${Math.floor(Math.round(s.h / 2.54) / 12)}′${Math.round(s.h / 2.54) % 12}″` : `${Math.round(s.h)} cm`);
+  if (s.age) who.push(`age ${s.age}`);
+
+  const e1 = s.lift.bw
+    ? `<b>${wt(perf)}</b><span>Est. 1RM incl. body</span>`
+    : `<b>${wt(perf)}</b><span>Est. 1RM</span>`;
+  const share = `My ${liftPhrase(s)} ranks ${rank.label} on the Ironhewn strength calculator: stronger than ${pctTxt} of lifters my size. How strong are you?`;
+  out.innerHTML = `<div class="rtop">${badge(rank, 116)}<div><div class="eb">Your ${esc(s.lift.short)} rank</div>
+      <h2 class="rname" id="rank-name" tabindex="-1" style="color:${tierText(rank.tier)}">${esc(rank.label)}</h2>
+      <div class="rsub">${levelName(L)} level</div></div></div>
+    <div class="stats"><div class="stat">${e1}</div><div class="stat"><b>${pctRaw < 1 ? '&lt;1' : pct}%</b><span>Percentile</span></div><div class="stat"><b>${strengthScore(L)}</b><span>Strength score</span></div></div>
+    <p class="pct">You’re stronger than <strong>${pctTxt}</strong> of lifters your size.</p>
+    ${next}
+    <h3 class="h3">${esc(s.lift.name)} standards for you</h3>
+    <p class="cap">${esc(who.join(', '))}. ${s.lift.bw ? 'Weight added for one rep (bodyweight counts).' : `Estimated 1RM in ${unit}.`}${s.lift.key === 'db-bench' ? ' Per dumbbell.' : ''}</p>
+    <table class="mine"><thead><tr><th scope="col">Level</th><th scope="col" class="n">${s.lift.bw ? 'Added' : '1RM'}</th><th scope="col">Rank</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr${r.you ? ' class="you"' : ''}>${r.html}</tr>`).join('')}</tbody></table>
+    <div class="sharebox"><p id="share-text">${esc(share)}</p><div class="sbtns"><button type="button" class="btn primary sm" id="share">Share my rank</button><button type="button" class="btn ghost sm" id="copy">Copy link</button><span class="copied" id="copied" role="status"></span></div></div>`;
+  const url = `${PAGE}?${permalink(s)}`;
+  const copy = async (text) => {
+    try { await navigator.clipboard.writeText(text); $('#copied').textContent = 'Copied'; } catch { $('#copied').textContent = 'Copy failed: select the text above'; }
+  };
+  $('#share').onclick = async () => {
+    if (navigator.share) { try { await navigator.share({ title: 'My strength rank', text: share, url }); return; } catch (err) { if (err && err.name === 'AbortError') return; } }
+    copy(`${share} ${url}`);
+  };
+  $('#copy').onclick = () => copy(`${share} ${url}`);
+}
+
+function update() {
+  const s = read();
+  showErrors(s.e);
+  const lift = s.lift;
+  $('#w-lbl').textContent = lift.bw ? 'Added weight' : lift.key === 'db-bench' ? 'Weight per dumbbell' : 'Weight lifted';
+  $('#w-hint').textContent = lift.bw ? 'Use 0 for bodyweight only, or a negative number for assisted reps.' : '';
+  form.w.placeholder = lift.bw ? '0' : unit === 'lb' ? '225' : '100';
+  if (s.e.w || s.e.bw) { last = null; out.innerHTML = EMPTY; return null; }
+  const c = compute(s);
+  last = { s, c };
+  render(s, c);
+  const q = permalink(s);
+  try { history.replaceState(null, '', `?${q}`); localStorage.setItem('ih-calc', q.toString()); } catch {}
+  return c;
+}
+
+function setUnit(u, convert) {
+  if (u !== unit && convert) {
+    const toK = u === 'kg';
+    const conv = (el, stepKg, stepLb) => { const v = num(el); if (v != null && !Number.isNaN(v)) el.value = String(Number((toK ? roundTo(v * KG_PER_LB, stepKg) : roundTo(v / KG_PER_LB, stepLb)).toFixed(1))); };
+    conv(form.w, 0.5, 1); conv(form.bw, 0.1, 1);
+    const h = heightCm();
+    if (toK) { if (h != null && !Number.isNaN(h)) form.cm.value = Math.round(h); }
+    else { const cm = num(form.cm); if (cm != null && !Number.isNaN(cm)) { const t = Math.round(cm / 2.54); form.ft.value = Math.floor(t / 12); form.inch.value = t % 12; } }
+  }
+  unit = u;
+  document.documentElement.dataset.unit = u;
+  document.querySelectorAll('.u-txt').forEach((el) => { el.textContent = u; });
+  form.bw.placeholder = u === 'lb' ? '180' : '82';
+}
+
+// restore from a shared link, else from this device
+const q = new URLSearchParams(location.search);
+let init = q;
+if (!q.has('lift') && !q.has('w')) { try { init = new URLSearchParams(localStorage.getItem('ih-calc') || ''); } catch { init = new URLSearchParams(); } }
+if (init.get('u') === 'kg') { form.unit.value = 'kg'; setUnit('kg'); } else setUnit('lb');
+if (LIFTS[init.get('lift')]) form.lift.value = init.get('lift');
+const r = parseInt(init.get('r'), 10); if (r >= 1 && r <= 12) form.reps.value = String(r);
+if (init.get('sex') === 'f') form.sex.value = 'female';
+for (const k of ['w', 'bw', 'age']) if (init.get(k) && Number.isFinite(Number(init.get(k)))) form[k].value = init.get(k);
+const hc = Number(init.get('h'));
+if (hc >= 120 && hc <= 230) {
+  if (unit === 'kg') form.cm.value = Math.round(hc); else { const t = Math.round(hc / 2.54); form.ft.value = Math.floor(t / 12); form.inch.value = t % 12; }
+  $('#more').open = true;
+}
+if (init.get('age')) $('#more').open = true;
+
+form.addEventListener('input', (ev) => { if (ev.target.name !== 'unit') update(); });
+form.addEventListener('change', (ev) => { if (ev.target.name === 'unit') setUnit(ev.target.value, true); update(); });
+form.addEventListener('focusout', (ev) => {
+  const n = ev.target.name; if (!n) return;
+  touched.add(['ft', 'inch', 'cm'].includes(n) ? 'h' : n);
+  showErrors(read().e);
+});
+form.addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  ['w', 'bw', 'h', 'age'].forEach((k) => touched.add(k));
+  const c = update();
+  if (!c) { const bad = $('[aria-invalid=true]', form); if (bad) bad.focus(); return; }
+  if (matchMedia('(max-width: 959px)').matches) out.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  $('#rank-name').focus({ preventScroll: true });
+});
+update();
+window.__calc = { read, compute, get last() { return last; } };
+</script>
+</body></html>
