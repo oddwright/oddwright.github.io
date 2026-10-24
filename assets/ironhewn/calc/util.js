@@ -46,6 +46,10 @@ export function fmtClock(sec) {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const monthName = (i) => MONTHS[i];
+/** "Oct 13" in the lifter's locale ("13 Oct" in the UK): never the ambiguous 13/10 or 10/13. */
+export const shortDate = (t) => new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+/** "Tue, Oct 20" for screen readers. */
+export const dayName = (t) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 export const weekdayName = (i) => WD[i];
 
 export function fmtDate(t, opts = {}) {

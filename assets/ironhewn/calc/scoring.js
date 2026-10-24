@@ -83,8 +83,8 @@ export const BOARD_LIFTS = Object.freeze({
 /** Board rules (engagement.md §3.2, §3.4, §6.3–§6.6). */
 export const BOARD = Object.freeze({
   windowDays: 180, minPatterns: 4, minAccountDays: 7, minLiveWorkouts30d: 3,
-  verifyLevel: 4.75,       // unverified lifters at or above this stay off public lists
-  holdLevel: 6.5,          // held everywhere until verified
+  // no video verification (owner decision 2026-10-23): rank on merit at every level; the jump check, the
+  // rate-limited ranking bodyweight and reports guard the top
   softLevel: 3.25,         // below this a failed jump check is accepted with a soft flag
 });
 
@@ -92,7 +92,7 @@ export const BOARD = Object.freeze({
 
 /** Performance value of one set for ranking purposes (kg / reps / seconds). Used by personal ranks. */
 export function setPerf(set, type, bw) {
-  if (WEIGHTED_TYPES.has(type)) return e1rm(effectiveLoad(set, type, bw), set.r, set.rpe);
+  if (WEIGHTED_TYPES.has(type)) return e1rm(effectiveLoad(set, type, bw), set.r);
   if (type === 'bw_reps') return set.r || 0;
   if (type === 'time' || type === 'weight_time') return set.s || 0;
   return 0;
@@ -204,7 +204,7 @@ const bestOf = (list) => list.reduce((b, x) => (!b || x.v > b.v ? x : b), null);
 /**
  * Judge one lift's sessions in time order. Each session: { wid, t, v, L, base, board }
  *   base  = may serve as history (live, late or imported)   board = may be a board value (live, synced in time)
- * Sets s.status ('accepted' | 'pending' | 'unconfirmed' | 'held' | 'ignored') and s.pr (beat the previous
+ * Sets s.status ('accepted' | 'pending' | 'unconfirmed' | 'ignored') and s.pr (beat the previous
  * accepted best). `jump` = whitelisted lift (full check); other lifts with a standard only allow +15 %.
  * Confirmations only count from sessions up to `until` (ms).
  */
@@ -241,7 +241,6 @@ export function judgeLift(sessions, { jump = true, until = Infinity } = {}) {
         if (c) s.status = 'accepted';
       }
     }
-    if (s.L >= BOARD.holdLevel) s.status = 'held';
     if (s.status === 'accepted') acc.push(s);
   }
   return sessions;
@@ -475,13 +474,11 @@ export function scoreUser({ workouts = [], profile = {}, body = [], info, tz, no
 function boardFor({ list, sessions, now, accountCreatedAt, inTime, bprof }) {
   const live30 = list.filter((r) => inTime(r) && r.end >= now - 30 * DAY && (r.end - r.start) / 60000 >= HEAT.minMinutes).length;
   const byPattern = {};
-  let held = 0;
   for (const [exId, pattern] of Object.entries(BOARD_LIFTS)) {
     const ss = sessions.get(exId);
     if (!ss) continue;
     const judged = judgeLift(ss.map((s) => ({ ...s })), { jump: true, until: now });
     for (const s of judged) {
-      if (s.status === 'held') { held++; continue; }
       if (s.status !== 'accepted' || !s.board || s.t < now - BOARD.windowDays * DAY) continue;
       if (!byPattern[pattern] || s.L > byPattern[pattern].L) byPattern[pattern] = { ex: exId, L: s.L, score: Math.round(s.L * 100) };
     }
@@ -498,12 +495,12 @@ function boardFor({ list, sessions, now, accountCreatedAt, inTime, bprof }) {
   else if (live30 < BOARD.minLiveWorkouts30d) reason = 'few_workouts';
   else if (patterns < BOARD.minPatterns) reason = 'patterns';
   return {
-    eligible: !reason, reason, patterns, live30, held,
+    eligible: !reason, reason, patterns, live30,
     level: Math.round(L * 1000) / 1000, score: Math.round(L * 100),
     standardsPct: standardsPercentile(L),
     cat: bprof.sex === 'female' ? 'f' : 'm',
     lifts: byPattern,
-    listable: !reason && L < BOARD.verifyLevel,
+    listable: !reason,
     standardsVersion: STANDARDS_VERSION,
   };
 }

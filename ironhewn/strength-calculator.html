@@ -277,7 +277,7 @@ html[data-unit=kg] .lbonly{display:none}html:not([data-unit=kg]) .kgonly{display
  <div class="links"><a href="/ironhewn/">Ironhewn</a><a href="/ironhewn/privacy">Privacy</a><a href="/ironhewn/terms">Terms</a><a href="/ironhewn/support">Support</a><a href="mailto:oddwright.support@gmail.com">Contact</a></div>
 </div></footer>
 <script type="module">
-import { thresholds, levelFrom, rankOf, levelName, valueForLevel, strengthScore, LEVEL_NAMES } from '/assets/ironhewn/calc/ranks.js';
+import { thresholds, levelFrom, rankOf, rankLevelName, valueForLevel, strengthScore, LEVEL_NAMES } from '/assets/ironhewn/calc/ranks.js';
 import { weightForReps } from '/assets/ironhewn/calc/calc.js';
 import { setPerf, standardsPercentile } from '/assets/ironhewn/calc/scoring.js';
 
@@ -414,8 +414,8 @@ function render(s, c) {
   const share = `My ${liftPhrase(s)} ranks ${rank.label} on the Ironhewn strength calculator: stronger than ${pctTxt} of lifters my size. How strong are you?`;
   out.innerHTML = `<div class="rtop">${badge(rank, 116)}<div><div class="eb">Your ${esc(s.lift.short)} rank</div>
       <h2 class="rname" id="rank-name" tabindex="-1" style="color:${tierText(rank.tier)}">${esc(rank.label)}</h2>
-      <div class="rsub">${levelName(L)} level</div></div></div>
-    <div class="stats"><div class="stat">${e1}</div><div class="stat"><b>${pctRaw < 1 ? '&lt;1' : pct}%</b><span>Percentile</span></div><div class="stat"><b>${strengthScore(L)}</b><span>Strength score</span></div></div>
+      <div class="rsub">${rankLevelName(rank)} level</div></div></div>
+    <div class="stats"><div class="stat">${e1}</div><div class="stat"><b>${pctRaw < 1 ? '&lt;1' : pct}%</b><span>Percentile</span></div><div class="stat"><b>${strengthScore(L)}</b><span>Score</span></div></div>
     <p class="pct">You’re stronger than <strong>${pctTxt}</strong> of lifters your size.</p>
     ${next}
     <h3 class="h3">${esc(s.lift.name)} standards for you</h3>

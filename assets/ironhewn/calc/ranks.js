@@ -152,8 +152,7 @@ export function valueForLevel(L, t) {
   return t[i] + (L - 1 - i) * (t[i + 1] - t[i]);
 }
 
-export const LEVEL_NAMES = ['Untrained', 'Beginner', 'Novice', 'Intermediate', 'Advanced', 'Elite', 'World Class'];
-export const levelName = (L) => LEVEL_NAMES[clamp(Math.floor(L), 0, 6)];
+export const LEVEL_NAMES = ['Just starting', 'Beginner', 'Novice', 'Intermediate', 'Advanced', 'Elite', 'World Class'];
 
 // ── Metal rank tiers
 export const TIERS = [
@@ -196,6 +195,10 @@ export function rankOf(L) {
   };
 }
 
+/** Level name shown beside a rank: from its tier, so one rank never reads as two levels. */
+const TIER_LEVEL = { rust: 0, copper: 1, bronze: 1, iron: 2, steel: 2, silver: 3, gold: 3, platinum: 4, titanium: 4, orichalcum: 5 };
+export const rankLevelName = (rank) => (rank?.tier?.id === 'starforged' ? LEVEL_NAMES[rank.L >= 6 ? 6 : 5] : LEVEL_NAMES[TIER_LEVEL[rank?.tier?.id] ?? 0]);
+
 export const UNRANKED = { tier: { id: 'unranked', name: 'Unranked', c: ['#24272E', '#3A3F49', '#5A606C'], ink: '#C9CED6' }, idx: -1, div: null, label: 'Unranked', step: -1, progress: 0, next: null, L: 0 };
 
 export const strengthScore = (L) => Math.round((L || 0) * 100);
@@ -225,9 +228,10 @@ export function levelInfo(xp) {
 }
 
 export const TITLES = [
-  [1, 'Fresh Ore'], [3, 'Spark'], [5, 'Apprentice'], [10, 'Journeyman'], [15, 'Ironsmith'],
-  [20, 'Steelsmith'], [25, 'Bladesmith'], [30, 'Master Smith'], [40, 'Forgemaster'],
-  [50, 'Ironlord'], [65, 'Titan'], [80, 'Mythic'], [100, 'Legend of the Forge'],
+  // no metal names here: those belong to the rank tiers
+  [1, 'Fresh Ore'], [3, 'Spark'], [5, 'Apprentice'], [10, 'Journeyman'], [15, 'Toolsmith'],
+  [20, 'Armourer'], [25, 'Bladesmith'], [30, 'Master Smith'], [40, 'Forgemaster'],
+  [50, 'Forge Lord'], [65, 'Titan'], [80, 'Mythic'], [100, 'Legend of the Forge'],
 ];
 export function titleFor(level) {
   let t = TITLES[0][1];
@@ -240,9 +244,9 @@ export const ACCENTS = [
   { id: 'ember', name: 'Ember', level: 1, c: '#FF5A1F', c2: '#FFA23A' },
   { id: 'arc', name: 'Arc Blue', level: 5, c: '#2F8CFF', c2: '#6FD3FF' },
   { id: 'venom', name: 'Venom', level: 10, c: '#2BD46E', c2: '#B8FF5C' },
-  { id: 'royal', name: 'Royal', level: 15, c: '#8A5CFF', c2: '#E07BFF' },
-  { id: 'crimson', name: 'Crimson', level: 20, c: '#E8173D', c2: '#FF7A59' },
+  { id: 'royal', name: 'Royal', level: 15, c: '#9D75FF', c2: '#E07BFF' },
+  { id: 'crimson', name: 'Crimson', level: 20, c: '#FF3B5C', c2: '#FF7A59' },
   { id: 'gold', name: 'Gilded', level: 30, c: '#E0A400', c2: '#FFE58A' },
   { id: 'glacier', name: 'Glacier', level: 40, c: '#5FC9C0', c2: '#DFFFFB' },
-  { id: 'star', name: 'Starforged', level: 50, c: '#8A5CFF', c2: '#7FE7FF' },
+  { id: 'star', name: 'Nebula', level: 50, c: '#9D75FF', c2: '#7FE7FF' },
 ];

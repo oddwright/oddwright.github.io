@@ -4,11 +4,11 @@
 import { isNum } from './util.js';
 
 /** Estimated one-rep max. Averages Epley and Brzycki (they bracket each other
- *  well in the 2–10 rep range) and folds reps-in-reserve from RPE into reps. */
-export function e1rm(weight, reps, rpe) {
+ *  well in the 2–10 rep range). RPE stays out: PRs and ranks compare sets logged with and
+ *  without it, so reps in reserve would read as a stronger lift. */
+export function e1rm(weight, reps) {
   if (!isNum(weight) || !isNum(reps) || weight <= 0 || reps <= 0) return 0;
-  let r = reps;
-  if (isNum(rpe) && rpe >= 5 && rpe < 10) r += 10 - rpe;
+  const r = reps;
   if (r <= 1) return weight;
   const epley = weight * (1 + r / 30);
   const brzycki = r < 37 ? weight * (36 / (37 - r)) : epley;
