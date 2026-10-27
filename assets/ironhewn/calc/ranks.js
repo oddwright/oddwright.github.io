@@ -239,7 +239,7 @@ export function titleFor(level) {
   return t;
 }
 
-// ── Accent colours unlocked by level (cosmetic rewards)
+// ── Accent colours: unlocked by level, or by a milestone achievement (cosmetic rewards; src/lib/cosmetics.js)
 export const ACCENTS = [
   { id: 'ember', name: 'Ember', level: 1, c: '#FF5A1F', c2: '#FFA23A' },
   { id: 'arc', name: 'Arc Blue', level: 5, c: '#2F8CFF', c2: '#6FD3FF' },
@@ -249,4 +249,7 @@ export const ACCENTS = [
   { id: 'gold', name: 'Gilded', level: 30, c: '#E0A400', c2: '#FFE58A' },
   { id: 'glacier', name: 'Glacier', level: 40, c: '#5FC9C0', c2: '#DFFFFB' },
   { id: 'star', name: 'Nebula', level: 50, c: '#9D75FF', c2: '#7FE7FF' },
+  { id: 'sunforge', name: 'Sunforge', ach: 'rank_gold', short: 'Gold', how: 'reach Gold on any lift', c: '#F2B705', c2: '#FF6F3C' },
+  { id: 'wildfire', name: 'Wildfire', ach: 'streak12', short: '12 wk', how: 'hit your weekly goal 12 weeks in a row', c: '#E8340C', c2: '#FFD000' },
+  { id: 'cosmos', name: 'Cosmos', ach: 'rank_star', short: 'Star', how: 'reach Starforged on any lift', c: '#4F7BFF', c2: '#E77BFF' },
 ];
